@@ -101,7 +101,7 @@ export const AssessmentForm: React.FC = () => {
     try {
       const assessment = await assessmentService.create(formData);
       addAssessment(assessment);
-      router.push(`/dashboard/assessment/${assessment.id}`);
+      router.push(`/dashboard/assessment?id=${assessment.id}`);
     } catch (err: any) {
       setError(err?.response?.data?.detail || "Failed to create assessment");
     } finally {

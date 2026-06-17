@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import { Loading, Error } from "@/components/common/Loading";
@@ -14,9 +14,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export const AssessmentDetail: React.FC = () => {
-  const params = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const assessmentId = parseInt(params.id as string);
+  const assessmentId = parseInt(searchParams.get("id") || "", 10);
 
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
@@ -27,6 +27,12 @@ export const AssessmentDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!Number.isFinite(assessmentId)) {
+      setIsLoading(false);
+      setError("Missing assessment id");
+      return;
+    }
+
     const loadData = async () => {
       setIsLoading(true);
       setError(null);

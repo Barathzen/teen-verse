@@ -273,7 +273,7 @@ export default function PredictionPage() {
                   )}
 
                   <div className="flex flex-col gap-2 justify-center">
-                    <Link href={`/dashboard/assessment/${assessment.id}`}>
+                    <Link href={`/dashboard/assessment?id=${assessment.id}`}>
                       <Button variant={prediction ? "secondary" : "primary"} className="w-full whitespace-nowrap">
                         {prediction ? "View Analysis" : (isAdmin ? "Generate Prediction" : "View Assessment")}
                       </Button>

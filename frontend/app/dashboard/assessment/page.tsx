@@ -1,13 +1,9 @@
-import { AssessmentForm } from "@/components/assessment/AssessmentForm";
+import { AssessmentDetail } from "@/components/assessment/AssessmentDetail";
 
 export const metadata = {
-  title: "Create Assessment - TeenVerse",
+  title: "Assessment - TeenVerse",
 };
 
-export default function CreateAssessmentPage() {
-  return (
-    <div>
-      <AssessmentForm />
-    </div>
-  );
+export default function AssessmentPage() {
+  return <AssessmentDetail />;
 }
