@@ -41,7 +41,7 @@ jobs:
       - name: Build static site
         env:
           GITHUB_PAGES: "true"
-          NEXT_PUBLIC_REPO_NAME: Teenverse
+          NEXT_PUBLIC_REPO_NAME: teen-verse
           NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
         run: npm run build
 
