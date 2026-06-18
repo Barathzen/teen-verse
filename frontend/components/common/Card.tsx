@@ -1,4 +1,8 @@
 import React from "react";
+import MuiCard from "@mui/material/Card";
+import MuiCardContent from "@mui/material/CardContent";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 interface CardProps {
   children: React.ReactNode;
@@ -7,15 +11,18 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
   return (
-    <div
-      className={`
-        bg-white rounded-lg shadow-sm border border-gray-200
-        p-6 transition-shadow hover:shadow-md
-        ${className}
-      `}
+    <MuiCard
+      className={className}
+      sx={{
+        p: 0,
+        overflow: "hidden",
+        backdropFilter: "blur(16px)",
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.90))",
+      }}
     >
-      {children}
-    </div>
+      <MuiCardContent sx={{ p: 3 }}>{children}</MuiCardContent>
+    </MuiCard>
   );
 };
 
@@ -26,11 +33,11 @@ interface StatCardProps {
   color?: "blue" | "green" | "red" | "yellow";
 }
 
-const colorClasses = {
-  blue: "bg-blue-50 text-blue-700",
-  green: "bg-green-50 text-green-700",
-  red: "bg-red-50 text-red-700",
-  yellow: "bg-yellow-50 text-yellow-700",
+const colorStyles = {
+  blue: { bg: "#e8f0ff", fg: "#2457f5" },
+  green: { bg: "#e7f8f2", fg: "#10b981" },
+  red: { bg: "#feeceb", fg: "#ef4444" },
+  yellow: { bg: "#fff6df", fg: "#f59e0b" },
 };
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -39,15 +46,31 @@ export const StatCard: React.FC<StatCardProps> = ({
   icon,
   color = "blue",
 }) => {
+  const palette = colorStyles[color];
   return (
     <Card className="p-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm text-gray-600 mb-2">{label}</p>
-          <p className="text-3xl font-bold text-gray-900">{value}</p>
-        </div>
-        {icon && <div className={`p-3 rounded-lg ${colorClasses[color]}`}>{icon}</div>}
-      </div>
+      <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 2 }}>
+        <Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            {label}
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: "text.primary" }}>
+            {value}
+          </Typography>
+        </Box>
+        {icon && (
+          <Box
+            sx={{
+              p: 1.5,
+              borderRadius: 3,
+              backgroundColor: palette.bg,
+              color: palette.fg,
+            }}
+          >
+            {icon}
+          </Box>
+        )}
+      </Box>
     </Card>
   );
 };

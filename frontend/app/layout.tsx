@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Chelsea_Market } from "next/font/google";
 import "@/styles/globals.css";
+import { AppThemeProvider } from "@/components/providers/ThemeProvider";
 
 const chelseaMarket = Chelsea_Market({
   weight: "400",
@@ -29,7 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={chelseaMarket.variable}>
-      <body className={chelseaMarket.className}>{children}</body>
+      <body className={chelseaMarket.className}>
+        <AppThemeProvider>{children}</AppThemeProvider>
+      </body>
     </html>
   );
 }

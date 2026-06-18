@@ -1,4 +1,6 @@
 import React from "react";
+import ButtonBase from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "outline";
 type ButtonSize = "sm" | "md" | "lg";
@@ -10,18 +12,24 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
 
-const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400",
-  secondary: "bg-gray-600 text-white hover:bg-gray-700 disabled:bg-gray-400",
-  danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-400",
-  outline:
-    "border-2 border-blue-600 text-blue-600 hover:bg-blue-50 disabled:border-blue-300 disabled:text-blue-300",
+const variantMap: Record<ButtonVariant, "contained" | "outlined"> = {
+  primary: "contained",
+  secondary: "contained",
+  danger: "contained",
+  outline: "outlined",
 };
 
-const sizeClasses: Record<ButtonSize, string> = {
-  sm: "px-3 py-1 text-sm",
-  md: "px-4 py-2 text-base",
-  lg: "px-6 py-3 text-lg",
+const colorMap: Record<ButtonVariant, "primary" | "error" | "secondary"> = {
+  primary: "primary",
+  secondary: "secondary",
+  danger: "error",
+  outline: "primary",
+};
+
+const sizeMap: Record<ButtonSize, "small" | "medium" | "large"> = {
+  sm: "small",
+  md: "medium",
+  lg: "large",
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -37,28 +45,49 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
+    const muiVariant = variantMap[variant];
+    const muiColor = colorMap[variant];
+
     return (
-      <button
+      <ButtonBase
         ref={ref}
+        variant={muiVariant}
+        color={muiColor}
+        size={sizeMap[size]}
         disabled={isLoading || disabled}
-        className={`
-          ${variantClasses[variant]}
-          ${sizeClasses[size]}
-          rounded-lg font-medium transition-colors duration-200
-          disabled:cursor-not-allowed
-          ${className}
-        `}
+        disableElevation
+        className={className}
+        sx={{
+          minWidth: "fit-content",
+          fontWeight: 700,
+          borderRadius: 3,
+          ...(variant === "outline" && {
+            borderWidth: 2,
+          }),
+          ...(variant === "danger" && {
+            background: "linear-gradient(135deg, #ef4444, #dc2626)",
+            "&:hover": { background: "linear-gradient(135deg, #dc2626, #b91c1c)" },
+          }),
+          ...(variant === "primary" && {
+            background: "linear-gradient(135deg, #2457f5, #1737a9)",
+            "&:hover": { background: "linear-gradient(135deg, #1737a9, #102b8a)" },
+          }),
+          ...(variant === "secondary" && {
+            background: "linear-gradient(135deg, #334155, #0f172a)",
+            "&:hover": { background: "linear-gradient(135deg, #1e293b, #020617)" },
+          }),
+        }}
         {...props}
       >
         {isLoading ? (
           <span className="flex items-center gap-2">
-            <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            <CircularProgress size={16} color="inherit" />
             Loading...
           </span>
         ) : (
           children
         )}
-      </button>
+      </ButtonBase>
     );
   }
 );
