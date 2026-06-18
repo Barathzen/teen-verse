@@ -16,6 +16,7 @@ from app.services.explainability_service import (
 )
 from app.models.user import User
 from app.models.prediction import Prediction
+from app.models.assessment import Assessment
 
 router = APIRouter(
     prefix="/prediction",
@@ -29,12 +30,14 @@ def predict_risk(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail="Only administrators are authorized to generate predictions."
-        )
     try:
+        assessment = db.query(Assessment).filter(Assessment.id == request.assessment_id).first()
+        if assessment and assessment.user_id != current_user.id and current_user.role != "admin":
+            raise HTTPException(
+                status_code=403,
+                detail="Not authorized to generate predictions for this assessment."
+            )
+
         prediction = create_prediction(db, request.assessment_id)
         return prediction
     except HTTPException as e:

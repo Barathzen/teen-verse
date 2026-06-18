@@ -71,11 +71,6 @@ def simulate(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail="Only administrators are authorized to run simulations."
-        )
     # Get the original assessment
     assessment = db.query(Assessment).filter(
         Assessment.id == request.assessment_id
@@ -85,6 +80,12 @@ def simulate(
         raise HTTPException(
             status_code=404,
             detail="Assessment not found"
+        )
+
+    if assessment.user_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized to run simulations for this assessment."
         )
     
     try:

@@ -7,7 +7,7 @@ import { Button } from "@/components/common/Button";
 import { Loading, Error } from "@/components/common/Loading";
 import { PredictionPlaceholder } from "@/components/prediction/PredictionPlaceholder";
 import { useAuth } from "@/hooks/useAuth";
-import { assessmentService } from "@/services/index";
+import { assessmentService, predictionService } from "@/services/index";
 import { Assessment } from "@/types/api";
 import { formatDate, getRiskCategory, formatRiskScore } from "@/utils/formatters";
 import { RISK_CATEGORIES } from "@/utils/constants";
@@ -82,6 +82,19 @@ export default function PredictionPage() {
       setToast({ message: "Assessment deleted successfully", type: "success" });
     } catch (err: any) {
       setToast({ message: err?.response?.data?.detail || "Failed to delete", type: "error" });
+    }
+  };
+
+  const handleGeneratePrediction = async (assessmentId: number) => {
+    setError(null);
+    try {
+      const prediction = await predictionService.create(assessmentId);
+      setAssessments((prev) =>
+        prev.map((a) => (a.id === assessmentId ? { ...a, prediction } : a))
+      );
+      setToast({ message: "Prediction generated successfully", type: "success" });
+    } catch (err: any) {
+      setToast({ message: err?.response?.data?.detail || "Failed to generate prediction", type: "error" });
     }
   };
 
@@ -273,11 +286,41 @@ export default function PredictionPage() {
                   )}
 
                   <div className="flex flex-col gap-2 justify-center">
-                    <Link href={`/dashboard/assessment?id=${assessment.id}`}>
-                      <Button variant={prediction ? "secondary" : "primary"} className="w-full whitespace-nowrap">
-                        {prediction ? "View Analysis" : (isAdmin ? "Generate Prediction" : "View Assessment")}
-                      </Button>
-                    </Link>
+                    {prediction ? (
+                      <Link href={`/dashboard/simulation?assessment=${assessment.id}`}>
+                        <Button variant="secondary" className="w-full whitespace-nowrap">
+                          Run Simulation
+                        </Button>
+                      </Link>
+                    ) : isAdmin ? (
+                      <div className="flex flex-col gap-2">
+                        <button
+                          onClick={() => handleGeneratePrediction(assessment.id)}
+                          className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+                        >
+                          Generate Prediction
+                        </button>
+                        <Link href={`/dashboard/assessment?id=${assessment.id}`}>
+                          <Button variant="outline" className="w-full whitespace-nowrap">
+                            View Assessment
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <button
+                          onClick={() => handleGeneratePrediction(assessment.id)}
+                          className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+                        >
+                          Generate Prediction
+                        </button>
+                        <Link href={`/dashboard/simulation?assessment=${assessment.id}`}>
+                          <Button variant="outline" className="w-full whitespace-nowrap">
+                            Run Simulation
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
                     
                     {/* Admin controls */}
                     {isAdmin && !isEditing && (
