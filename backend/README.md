@@ -71,6 +71,43 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 The API will be available at `http://localhost:8000`
 
+## 🌐 Deploying on Render
+
+### 1. Create a Render Web Service
+- Connect your GitHub repo to Render.
+- Select the `backend` app directory if Render asks for a root directory.
+
+### 2. Set the service type
+- **Environment**: `Python 3`
+- **Build Command**:
+```bash
+pip install -r requirements.txt
+```
+- **Start Command**:
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+### 3. Set environment variables on Render
+Use these exact names:
+```env
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DBNAME
+SECRET_KEY=your_long_random_secret
+OPENROUTER_API_KEY=your_openrouter_api_key
+OPENROUTER_MODEL=openai/gpt-oss-120b
+OPENROUTER_HTTP_REFERER=https://your-frontend-domain.github.io
+OPENROUTER_APP_TITLE=TeenVerse
+```
+
+### 4. Important Render notes
+- Use **PostgreSQL** on Render for a persistent database.
+- `sqlite:///./teenverse.db` is fine locally, but it is not ideal for production on Render.
+- After the first deploy, run the table creation once if needed:
+```bash
+python create_tables.py
+```
+- If Render gives you a shell, you can run the command there after the service starts.
+
 ## 📚 API Endpoints
 
 ### Authentication (`/auth`)
@@ -350,7 +387,7 @@ See `requirements.txt` for complete list.
 
 ### Environment Variables (.env)
 ```
-DATABASE_URL=sqlite:///./teenverse.db  # or postgresql://user:pass@localhost/db
+DATABASE_URL=sqlite:///./teenverse.db  # use PostgreSQL on Render production
 SECRET_KEY=your_secret_key_here
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 OPENROUTER_MODEL=openai/gpt-oss-120b

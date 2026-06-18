@@ -76,4 +76,4 @@ Output format:
         try:
             return data["choices"][0]["message"]["content"].strip()
         except (KeyError, IndexError, AttributeError) as exc:
-            raise RuntimeError("Unexpected response from NVIDIA chat API") from exc
+            raise RuntimeError("Unexpected response from OpenRouter chat API") from exc
