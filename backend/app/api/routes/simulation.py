@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-import pandas as pd
 
 from app.api.deps import get_db, get_current_user
 from app.schemas.simulation_schema import (
@@ -93,29 +92,21 @@ def simulate(
         original_df = assessment_to_dataframe(assessment)
         original_result = ml_predict(original_df)
         current_risk = original_result["risk_score"]
-        
-        # Create modified assessment data
-        modified_data = {
-            "age": assessment.age,
-            "gender": assessment.gender,
-            "daily_social_media_hours": request.social_media_hours,
-            "sleep_hours": request.sleep_hours,
-            "screen_time_before_sleep": assessment.screen_time_before_sleep,
-            "academic_performance": assessment.academic_performance,
-            "physical_activity": request.physical_activity,
-            "stress_level": assessment.stress_level,
-            "anxiety_level": assessment.anxiety_level,
-            "addiction_level": assessment.addiction_level,
-            "social_interaction_level": assessment.social_interaction_level,
-            "platform_usage": getattr(assessment, 'platform_usage', 'Instagram')
-        }
-        
-        # Create modified dataframe
-        modified_df = pd.DataFrame([modified_data])
-        modified_result = ml_predict(modified_df)
-        future_risk = modified_result["risk_score"]
-        
-        # Calculate risk reduction
+
+        # Calibrated delta-based adjustment so the simulation responds in the
+        # direction a user would expect: better habits lower risk, worse habits
+        # raise it. We still anchor the simulation to the current ML risk score.
+        sleep_delta = request.sleep_hours - assessment.sleep_hours
+        social_media_delta = assessment.social_media_hours - request.social_media_hours
+        activity_delta = request.physical_activity - assessment.physical_activity
+
+        risk_adjustment = (
+            sleep_delta * 4.0
+            + social_media_delta * 5.0
+            + activity_delta * 3.0
+        )
+
+        future_risk = max(0.0, min(100.0, current_risk - risk_adjustment))
         risk_reduction = current_risk - future_risk
         
         # Save simulation to database
