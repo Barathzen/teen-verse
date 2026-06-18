@@ -11,7 +11,11 @@ from app.api.routes import (
 )
 from app.api import prediction
 from app.core.database import Base, engine
-from app.models import *
+from app.models.user import User  # noqa: F401
+from app.models.assessment import Assessment  # noqa: F401
+from app.models.prediction import Prediction  # noqa: F401
+from app.models.persona import Persona  # noqa: F401
+from app.models.simulation import Simulation  # noqa: F401
 
 
 app = FastAPI(title="TeenVerse API")
