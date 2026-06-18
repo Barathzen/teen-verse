@@ -25,11 +25,24 @@ export const AssessmentDetail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingPrediction, setIsCreatingPrediction] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [assessmentList, setAssessmentList] = useState<Assessment[]>([]);
 
   useEffect(() => {
     if (!Number.isFinite(assessmentId)) {
-      setIsLoading(false);
-      setError("Missing assessment id");
+      const loadAssessments = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+          const data = await assessmentService.list();
+          setAssessmentList(data);
+        } catch (err: any) {
+          setError(err?.response?.data?.detail || "Failed to load assessments");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      loadAssessments();
       return;
     }
 
@@ -90,6 +103,55 @@ export const AssessmentDetail: React.FC = () => {
   };
 
   if (isLoading) return <Loading message="Loading assessment..." />;
+  if (!Number.isFinite(assessmentId)) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Assessments</h1>
+          <p className="text-gray-600 mt-1">Pick an assessment to view its analysis</p>
+        </div>
+
+        {error && <Error message={error} onDismiss={() => setError(null)} />}
+
+        {isLoading ? (
+          <Loading message="Loading assessments..." />
+        ) : assessmentList.length === 0 ? (
+          <Card>
+            <div className="text-center py-10">
+              <p className="text-gray-600">No assessments found yet.</p>
+              <Button className="mt-4" onClick={() => router.push("/dashboard/prediction")}>
+                Go to Prediction
+              </Button>
+            </div>
+          </Card>
+        ) : (
+          <div className="grid gap-4">
+            {assessmentList.map((item) => (
+              <Card key={item.id}>
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      Assessment #{item.id}
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                      Age {item.age}, {item.gender}, {item.platform_usage}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Created {formatDate(item.created_at)}
+                    </p>
+                  </div>
+                  <Button onClick={() => router.push(`/dashboard/assessment?id=${item.id}`)}>
+                    View Analysis
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (!assessment) return <Error message="Assessment not found" />;
 
   const riskCategory = prediction ? getRiskCategory(prediction.risk_score) : null;

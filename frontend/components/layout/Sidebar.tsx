@@ -4,16 +4,16 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/common/Button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LayoutDashboard, ClipboardList, Sparkles, Zap, MessageCircle, BarChart3 } from "lucide-react";
 import { useState } from "react";
 
 const menuItems = [
-  { name: "Dashboard", href: "/dashboard", icon: "📊" },
-  { name: "Assessment", href: "/dashboard/assessment", icon: "📋" },
-  { name: "Prediction", href: "/dashboard/prediction", icon: "🔮" },
-  { name: "Simulation", href: "/dashboard/simulation", icon: "⚡" },
-  { name: "Chatbot", href: "/dashboard/chatbot", icon: "💬" },
-  { name: "Analytics", href: "/dashboard/analytics", icon: "📈" },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Assessment", href: "/dashboard/assessment", icon: ClipboardList },
+  { name: "Prediction", href: "/dashboard/prediction", icon: Sparkles },
+  { name: "Simulation", href: "/dashboard/simulation", icon: Zap },
+  { name: "Chatbot", href: "/dashboard/chatbot", icon: MessageCircle },
+  { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -71,7 +71,7 @@ export const Sidebar: React.FC = () => {
                     }
                   `}
                 >
-                  <span className="text-xl">{item.icon}</span>
+                  <item.icon size={18} />
                   {item.name}
                 </span>
               </Link>
