@@ -22,8 +22,7 @@ export default function DashboardLayout({
       if (
         user.role !== "admin" &&
         (pathname === "/dashboard" ||
-          pathname === "/dashboard/simulation" ||
-          pathname === "/dashboard/assessment")
+          pathname === "/dashboard/analytics")
       ) {
         router.push("/dashboard/assessment");
       }

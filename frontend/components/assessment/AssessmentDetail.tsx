@@ -144,14 +144,46 @@ export const AssessmentDetail: React.FC = () => {
                       Created {formatDate(item.created_at)}
                     </p>
                   </div>
-                  <Button onClick={() => router.push(`/dashboard/assessment?id=${item.id}`)}>
-                    View Analysis
+                  <Button
+                    onClick={() =>
+                      router.push(
+                        isAdmin
+                          ? `/dashboard/assessment?id=${item.id}`
+                          : `/dashboard/prediction?assessment=${item.id}`
+                      )
+                    }
+                  >
+                    {isAdmin ? "View Analysis" : "View Results"}
                   </Button>
                 </div>
               </Card>
             ))}
           </div>
         )}
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <div className="text-center py-10 space-y-3">
+            <h1 className="text-2xl font-bold text-gray-900">Assessment Created</h1>
+            <p className="text-gray-600">
+              Your assessment is ready. Continue to prediction or simulation to see your results.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+              <Button onClick={() => router.push("/dashboard/prediction")}>
+                View Prediction
+              </Button>
+              <Button variant="outline" onClick={() => router.push("/dashboard/simulation")}>
+                Run Simulation
+              </Button>
+            </div>
+          </div>
+        </Card>
+        <AssessmentForm />
       </div>
     );
   }
