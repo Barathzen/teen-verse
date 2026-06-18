@@ -11,6 +11,7 @@ import { formatDate, getRiskCategory, formatRiskScore } from "@/utils/formatters
 import { RISK_CATEGORIES } from "@/utils/constants";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
+import { AssessmentForm } from "@/components/assessment/AssessmentForm";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export const AssessmentDetail: React.FC = () => {
@@ -116,14 +117,17 @@ export const AssessmentDetail: React.FC = () => {
         {isLoading ? (
           <Loading message="Loading assessments..." />
         ) : assessmentList.length === 0 ? (
-          <Card>
-            <div className="text-center py-10">
-              <p className="text-gray-600">No assessments found yet.</p>
-              <Button className="mt-4" onClick={() => router.push("/dashboard/prediction")}>
-                Go to Prediction
-              </Button>
-            </div>
-          </Card>
+          <div className="space-y-6">
+            <Card>
+              <div className="text-center py-10">
+                <p className="text-gray-600">No assessments found yet.</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Create your first assessment below to continue.
+                </p>
+              </div>
+            </Card>
+            <AssessmentForm />
+          </div>
         ) : (
           <div className="grid gap-4">
             {assessmentList.map((item) => (
