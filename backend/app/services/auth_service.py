@@ -27,8 +27,9 @@ def register_user(
             "Email already exists"
         )
 
-    # Ensure role is lowercased and clean
-    user_role = role.lower() if role else "user"
+    # Public registration always creates regular users.
+    # Admin access is granted later from the admin portal.
+    user_role = "user"
 
     user = User(
         name=name,
@@ -76,3 +77,25 @@ def login_user(
 
     return token
 
+
+def update_user_role(
+    db: Session,
+    user_id: int,
+    role: str
+) -> User:
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise ValueError("User not found")
+
+    cleaned_role = role.lower().strip()
+    if cleaned_role not in {"user", "admin"}:
+        raise ValueError("Role must be either user or admin")
+
+    user.role = cleaned_role
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def list_users(db: Session):
+    return db.query(User).order_by(User.id.asc()).all()

@@ -13,7 +13,9 @@ from app.schemas.auth_schema import (
 from app.schemas.user_schema import UserResponse
 from app.services.auth_service import (
     register_user,
-    login_user
+    login_user,
+    list_users,
+    update_user_role,
 )
 
 router = APIRouter(
@@ -86,3 +88,32 @@ def get_me(
     current_user: User = Depends(get_current_user)
 ):
     return current_user
+
+
+@router.get("/users", response_model=list[UserResponse])
+def get_users(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return list_users(db)
+
+
+@router.patch("/users/{user_id}/role", response_model=UserResponse)
+def change_user_role(
+    user_id: int,
+    payload: dict,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    try:
+        role = payload.get("role")
+        if not role:
+            raise ValueError("Role is required")
+        return update_user_role(db, user_id, role)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

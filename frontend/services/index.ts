@@ -10,7 +10,9 @@ import {
   DashboardOverview,
   RiskDistribution,
   PersonaDistribution,
-  ChatResponse
+  ChatResponse,
+  User,
+  RoleUpdateRequest,
 } from "@/types/api";
 
 // Assessment endpoints
@@ -127,6 +129,20 @@ export const analyticsService = {
     const response = await apiClient.get<PersonaDistribution[]>(
       "/analytics/persona-distribution"
     );
+    return response.data;
+  },
+};
+
+// Admin endpoints
+export const adminService = {
+  async listUsers(): Promise<User[]> {
+    const response = await apiClient.get<User[]>("/auth/users");
+    return response.data;
+  },
+
+  async updateUserRole(userId: number, role: string): Promise<User> {
+    const payload: RoleUpdateRequest = { role };
+    const response = await apiClient.patch<User>(`/auth/users/${userId}/role`, payload);
     return response.data;
   },
 };

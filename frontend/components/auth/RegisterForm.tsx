@@ -5,7 +5,7 @@ import { FormEvent, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
-import { Input, Select } from "@/components/common/FormElements";
+import { Input } from "@/components/common/FormElements";
 import { Error } from "@/components/common/Loading";
 import { validateEmail, validatePassword, validateName } from "@/utils/validators";
 import Link from "next/link";
@@ -17,7 +17,6 @@ export const RegisterForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("user");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const validate = (): boolean => {
@@ -51,7 +50,7 @@ export const RegisterForm: React.FC = () => {
     if (!validate()) return;
 
     try {
-      await register(name, email, password, role);
+      await register(name, email, password, "user");
       router.push("/dashboard");
     } catch (error) {
       // Error is handled by store
@@ -86,17 +85,6 @@ export const RegisterForm: React.FC = () => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your@email.com"
             error={validationErrors.email}
-            required
-          />
-
-          <Select
-            label="Register As"
-            options={[
-              { value: "user", label: "User (View Activity Only)" },
-              { value: "admin", label: "Admin (Full Access)" },
-            ]}
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
             required
           />
 

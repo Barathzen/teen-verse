@@ -11,11 +11,14 @@ from app.api.routes import (
 )
 from app.api import prediction
 from app.core.database import Base, engine
+from app.core.config import settings
+from app.core.security import hash_password
 from app.models.user import User  # noqa: F401
 from app.models.assessment import Assessment  # noqa: F401
 from app.models.prediction import Prediction  # noqa: F401
 from app.models.persona import Persona  # noqa: F401
 from app.models.simulation import Simulation  # noqa: F401
+from app.core.database import SessionLocal
 
 
 app = FastAPI(title="TeenVerse API")
@@ -51,3 +54,29 @@ def health():
 @app.on_event("startup")
 def create_tables() -> None:
     Base.metadata.create_all(bind=engine)
+    seed_default_admin()
+
+
+def seed_default_admin() -> None:
+    if not settings.ADMIN_EMAIL or not settings.ADMIN_PASSWORD or not settings.ADMIN_NAME:
+        return
+
+    db = SessionLocal()
+    try:
+        existing_admin = db.query(User).filter(User.email == settings.ADMIN_EMAIL).first()
+        if existing_admin:
+            if existing_admin.role != "admin":
+                existing_admin.role = "admin"
+                db.commit()
+            return
+
+        admin_user = User(
+            name=settings.ADMIN_NAME,
+            email=settings.ADMIN_EMAIL,
+            password=hash_password(settings.ADMIN_PASSWORD),
+            role="admin",
+        )
+        db.add(admin_user)
+        db.commit()
+    finally:
+        db.close()

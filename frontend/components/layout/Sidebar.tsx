@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/common/Button";
-import { Menu, X, LayoutDashboard, ClipboardList, Sparkles, Zap, MessageCircle, BarChart3 } from "lucide-react";
+import { Menu, X, LayoutDashboard, ClipboardList, Sparkles, Zap, MessageCircle, BarChart3, Users } from "lucide-react";
 import { useState } from "react";
 
 const menuItems = [
@@ -14,6 +14,7 @@ const menuItems = [
   { name: "Simulation", href: "/dashboard/simulation", icon: Zap },
   { name: "Chatbot", href: "/dashboard/chatbot", icon: MessageCircle },
   { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+  { name: "Admin Portal", href: "/dashboard/admin", icon: Users },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -25,7 +26,7 @@ export const Sidebar: React.FC = () => {
   const isAdmin = user?.role === "admin";
   const filteredMenuItems = menuItems.filter((item) => {
     if (!isAdmin) {
-      // Regular users can only see their activities: Prediction, Chatbot
+      // Regular users can only see their activities
       return ["Prediction", "Chatbot"].includes(item.name);
     }
     return true;

@@ -97,6 +97,9 @@ OPENROUTER_API_KEY=your_openrouter_api_key
 OPENROUTER_MODEL=openai/gpt-oss-120b
 OPENROUTER_HTTP_REFERER=https://your-frontend-domain.github.io
 OPENROUTER_APP_TITLE=TeenVerse
+ADMIN_NAME=your_admin_name
+ADMIN_EMAIL=your_admin_email
+ADMIN_PASSWORD=your_admin_password
 ```
 
 ### 4. Important Render notes
@@ -393,6 +396,9 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 OPENROUTER_MODEL=openai/gpt-oss-120b
 OPENROUTER_HTTP_REFERER=http://localhost:3000
 OPENROUTER_APP_TITLE=TeenVerse
+ADMIN_NAME=your_admin_name
+ADMIN_EMAIL=your_admin_email
+ADMIN_PASSWORD=your_admin_password
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```

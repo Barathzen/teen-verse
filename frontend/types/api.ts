@@ -23,6 +23,10 @@ export interface User {
   role: string;
 }
 
+export interface RoleUpdateRequest {
+  role: string;
+}
+
 export interface AssessmentCreate {
   name?: string;
   age: number;
