@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -18,6 +20,8 @@ router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
+
+logger = logging.getLogger(__name__)
 
 
 @router.post("/register", response_model=TokenResponse)
@@ -45,6 +49,7 @@ def register(
             detail=str(e)
         )
     except Exception as e:
+        logger.exception("Registration failed")
         raise HTTPException(
             status_code=500,
             detail="Registration failed"
@@ -69,6 +74,7 @@ def login(
             detail=str(e)
         )
     except Exception as e:
+        logger.exception("Login failed")
         raise HTTPException(
             status_code=500,
             detail="Login failed"

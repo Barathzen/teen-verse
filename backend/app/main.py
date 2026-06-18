@@ -10,6 +10,8 @@ from app.api.routes import (
     chatbot,
 )
 from app.api import prediction
+from app.core.database import Base, engine
+from app.models import *
 
 
 app = FastAPI(title="TeenVerse API")
@@ -40,3 +42,8 @@ app.include_router(chatbot.router)
 @app.get("/")
 def health():
     return {"status": "running"}
+
+
+@app.on_event("startup")
+def create_tables() -> None:
+    Base.metadata.create_all(bind=engine)
