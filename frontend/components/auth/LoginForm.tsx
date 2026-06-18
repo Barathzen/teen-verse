@@ -8,6 +8,7 @@ import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/FormElements";
 import { Error } from "@/components/common/Loading";
 import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
 
 export const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -21,7 +22,8 @@ export const LoginForm: React.FC = () => {
     
     try {
       await login(email, password);
-      router.push("/dashboard");
+      const currentUser = useAuthStore.getState().user;
+      router.push(currentUser?.role === "admin" ? "/dashboard" : "/dashboard/assessment");
     } catch (error) {
       // Error is handled by store
     }

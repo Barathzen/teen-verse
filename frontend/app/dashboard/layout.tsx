@@ -22,11 +22,10 @@ export default function DashboardLayout({
       if (
         user.role !== "admin" &&
         (pathname === "/dashboard" ||
-          pathname === "/dashboard/analytics" ||
           pathname === "/dashboard/simulation" ||
           pathname === "/dashboard/assessment")
       ) {
-        router.push("/dashboard/prediction");
+        router.push("/dashboard/assessment");
       }
     }
   }, [isAuthenticated, isHydrated, user, pathname, router]);

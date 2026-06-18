@@ -27,11 +27,6 @@ def create_new_assessment(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail="Only administrators are authorized to add new assessments."
-        )
     try:
         assessment = create_assessment(
             db,
