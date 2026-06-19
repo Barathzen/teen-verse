@@ -1,28 +1,42 @@
 import React from "react";
-import TextField from "@mui/material/TextField";
+import TextField, { type TextFieldProps } from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+type SharedTextFieldProps = Omit<
+  TextFieldProps,
+  "label" | "error" | "helperText" | "variant" | "select" | "multiline" | "children"
+>;
+
+interface InputProps extends SharedTextFieldProps {
   label?: string;
   error?: string;
+  min?: number | string;
+  max?: number | string;
+  step?: number | string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className = "", ...props }, ref) => {
+  ({ label, error, min, max, step, ...props }, ref) => {
     return (
       <TextField
+        {...props}
         inputRef={ref}
         fullWidth
         label={label}
         error={Boolean(error)}
         helperText={error}
         variant="outlined"
-        className={className}
-        {...props}
+        slotProps={{
+          htmlInput: {
+            min,
+            max,
+            step,
+          },
+        }}
       />
     );
   }
@@ -30,25 +44,24 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
 Input.displayName = "Input";
 
-interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+interface SelectProps extends SharedTextFieldProps {
   label?: string;
   error?: string;
   options: { value: string | number; label: string }[];
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, options, className = "", ...props }, ref) => {
+export const Select = React.forwardRef<HTMLInputElement, SelectProps>(
+  ({ label, error, options, ...props }, ref) => {
     return (
       <TextField
+        {...props}
+        inputRef={ref}
         select
         fullWidth
         label={label}
         error={Boolean(error)}
         helperText={error}
         variant="outlined"
-        className={className}
-        inputRef={ref}
-        {...props}
       >
         <MenuItem value="">Select an option</MenuItem>
         {options.map((opt) => (
@@ -63,15 +76,16 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 
 Select.displayName = "Select";
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaProps extends SharedTextFieldProps {
   label?: string;
   error?: string;
 }
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, className = "", ...props }, ref) => {
+export const Textarea = React.forwardRef<HTMLInputElement, TextareaProps>(
+  ({ label, error, ...props }, ref) => {
     return (
       <TextField
+        {...props}
         inputRef={ref}
         fullWidth
         multiline
@@ -80,8 +94,6 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         error={Boolean(error)}
         helperText={error}
         variant="outlined"
-        className={className}
-        {...props}
       />
     );
   }

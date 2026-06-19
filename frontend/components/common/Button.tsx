@@ -46,13 +46,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const muiVariant = variantMap[variant];
-    const muiColor = colorMap[variant];
+    const muiColor = variant === "outline" ? undefined : colorMap[variant];
 
     return (
       <ButtonBase
-        ref={ref}
+        ref={ref as any}
         variant={muiVariant}
-        color={muiColor}
+        color={muiColor as any}
         size={sizeMap[size]}
         disabled={isLoading || disabled}
         disableElevation
