@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useRef, useEffect, useState } from "react";
-import { Card } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/FormElements";
 import { Error } from "@/components/common/Loading";
