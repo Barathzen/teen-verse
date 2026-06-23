@@ -5,7 +5,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 type ButtonVariant = "primary" | "secondary" | "danger" | "outline";
 type ButtonSize = "sm" | "md" | "lg";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
