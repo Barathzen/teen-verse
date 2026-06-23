@@ -23,3 +23,7 @@ class TokenResponse(BaseModel):
 
     token_type: str = "bearer"
 
+class GoogleLoginRequest(BaseModel):
+    email: EmailStr
+    name: str
+    uid: str

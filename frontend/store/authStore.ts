@@ -11,6 +11,7 @@ interface AuthState {
   
   register: (name: string, email: string, password: string, role?: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
+  googleLogin: (email: string, name: string, uid: string) => Promise<void>;
   logout: () => void;
   restoreSession: () => Promise<void>;
   clearError: () => void;
@@ -87,6 +88,41 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: any) {
       set({
         error: error.response?.data?.detail || "Login failed",
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  googleLogin: async (email, name, uid) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await apiClient.post<TokenResponse>("/auth/google", {
+        email,
+        name,
+        uid,
+      });
+      
+      const token = response.data.access_token;
+      localStorage.setItem("authToken", token);
+      if (typeof window !== "undefined") {
+        document.cookie = `authToken=${token}; path=/; max-age=604800; SameSite=Lax`;
+      }
+      
+      set({
+        token,
+        isAuthenticated: true,
+      });
+
+      // Fetch user profile to get role and user details
+      const userResponse = await apiClient.get<User>("/auth/me");
+      set({
+        user: userResponse.data,
+        isLoading: false,
+      });
+    } catch (error: any) {
+      set({
+        error: error.response?.data?.detail || "Google Login failed",
         isLoading: false,
       });
       throw error;

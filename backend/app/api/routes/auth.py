@@ -8,7 +8,8 @@ from app.models.user import User
 from app.schemas.auth_schema import (
     RegisterRequest,
     LoginRequest,
-    TokenResponse
+    TokenResponse,
+    GoogleLoginRequest
 )
 from app.schemas.user_schema import UserResponse
 from app.services.auth_service import (
@@ -16,6 +17,7 @@ from app.services.auth_service import (
     login_user,
     list_users,
     update_user_role,
+    google_login_user,
 )
 
 router = APIRouter(
@@ -76,10 +78,30 @@ def login(
             detail=str(e)
         )
     except Exception as e:
-        logger.exception("Login failed")
         raise HTTPException(
             status_code=500,
             detail="Login failed"
+        )
+
+
+@router.post("/google", response_model=TokenResponse)
+def google_login(
+    request: GoogleLoginRequest,
+    db: Session = Depends(get_db)
+):
+    try:
+        token = google_login_user(
+            db,
+            request.email,
+            request.name,
+            request.uid
+        )
+        return TokenResponse(access_token=token)
+    except Exception as e:
+        logger.exception("Google Login failed")
+        raise HTTPException(
+            status_code=500,
+            detail="Google Login failed"
         )
 
 

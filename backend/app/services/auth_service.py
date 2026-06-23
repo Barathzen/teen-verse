@@ -78,6 +78,23 @@ def login_user(
     return token
 
 
+def google_login_user(db: Session, email: str, name: str, uid: str):
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        # Create user if it doesn't exist
+        user = User(
+            name=name,
+            email=email,
+            password=hash_password(uid), # Use UID as dummy password since authentication is managed by Google
+            role="user"
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    token = create_access_token({"sub": str(user.id)})
+    return token
+
 def update_user_role(
     db: Session,
     user_id: int,
