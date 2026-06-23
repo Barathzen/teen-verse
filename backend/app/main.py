@@ -1,3 +1,12 @@
+"""
+TeenVerse backend entry point.
+
+Sets up FastAPI application with CORS, routes, database tables, and the
+default admin seed.
+"""
+
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -10,7 +19,7 @@ from app.api.routes import (
     chatbot,
 )
 from app.api import prediction
-from app.core.database import Base, engine
+from app.core.database import Base, engine, SessionLocal
 from app.core.config import settings
 from app.core.security import hash_password
 from app.models.user import User  # noqa: F401
@@ -18,10 +27,26 @@ from app.models.assessment import Assessment  # noqa: F401
 from app.models.prediction import Prediction  # noqa: F401
 from app.models.persona import Persona  # noqa: F401
 from app.models.simulation import Simulation  # noqa: F401
-from app.core.database import SessionLocal
 
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)-7s | %(name)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger("teenverse")
 
-app = FastAPI(title="TeenVerse API")
+# ---------------------------------------------------------------------------
+# FastAPI app
+# ---------------------------------------------------------------------------
+app = FastAPI(
+    title="TeenVerse API",
+    version="1.1.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+)
 
 # ---------------------------------------------------------------------------
 # CORS configuration
@@ -37,6 +62,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ---------------------------------------------------------------------------
+# Routes
+# ---------------------------------------------------------------------------
 app.include_router(auth.router)
 app.include_router(assessment.router)
 app.include_router(prediction.router)
@@ -46,37 +74,50 @@ app.include_router(analytics.router)
 app.include_router(chatbot.router)
 
 
-@app.get("/")
+@app.get("/", tags=["Health"])
 def health():
-    return {"status": "running"}
+    """Health check endpoint."""
+    return {"status": "running", "version": "1.1.0"}
 
 
+# ---------------------------------------------------------------------------
+# Startup: create tables + seed admin
+# ---------------------------------------------------------------------------
 @app.on_event("startup")
-def create_tables() -> None:
+def on_startup() -> None:
+    logger.info("Creating database tables …")
     Base.metadata.create_all(bind=engine)
-    seed_default_admin()
+    _seed_default_admin()
+    logger.info("Startup complete.")
 
 
-def seed_default_admin() -> None:
+def _seed_default_admin() -> None:
+    """Create the default admin user from env vars if it doesn't exist yet."""
     if not settings.ADMIN_EMAIL or not settings.ADMIN_PASSWORD or not settings.ADMIN_NAME:
         return
 
     db = SessionLocal()
     try:
-        existing_admin = db.query(User).filter(User.email == settings.ADMIN_EMAIL).first()
-        if existing_admin:
-            if existing_admin.role != "admin":
-                existing_admin.role = "admin"
+        existing = db.query(User).filter(User.email == settings.ADMIN_EMAIL).first()
+        if existing:
+            if existing.role != "admin":
+                existing.role = "admin"
                 db.commit()
+                logger.info("Promoted %s to admin.", settings.ADMIN_EMAIL)
             return
 
-        admin_user = User(
-            name=settings.ADMIN_NAME,
-            email=settings.ADMIN_EMAIL,
-            password=hash_password(settings.ADMIN_PASSWORD),
-            role="admin",
+        db.add(
+            User(
+                name=settings.ADMIN_NAME,
+                email=settings.ADMIN_EMAIL,
+                password=hash_password(settings.ADMIN_PASSWORD),
+                role="admin",
+            )
         )
-        db.add(admin_user)
         db.commit()
+        logger.info("Seeded admin user: %s", settings.ADMIN_EMAIL)
+    except Exception:
+        db.rollback()
+        logger.exception("Failed to seed admin user")
     finally:
         db.close()

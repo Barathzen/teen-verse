@@ -106,8 +106,8 @@ export default function PredictionPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-950">Risk Predictions</h1>
-            <p className="text-gray-600 mt-1">View and manage your risk assessments</p>
+            <h1 className="text-3xl font-bold text-gray-950 dark:text-white">Risk Predictions</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">View and manage your risk assessments</p>
           </div>
           {isAdmin && (
             <Link href="/dashboard/assessment">
@@ -139,8 +139,8 @@ export default function PredictionPage() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-950">Risk Predictions</h1>
-          <p className="text-gray-600 mt-1">View and manage your risk assessments</p>
+          <h1 className="text-3xl font-bold text-gray-950 dark:text-white">Risk Predictions</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">View and manage your risk assessments</p>
         </div>
         {isAdmin && (
           <Link href="/dashboard/assessment">
@@ -161,11 +161,11 @@ export default function PredictionPage() {
             <Card key={assessment.id} className="hover:shadow-md transition duration-200 relative">
               {/* Delete confirmation overlay */}
               {isDeleting && (
-                <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
+                <div className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
                   <div className="text-center space-y-4 p-6">
                     <div className="text-4xl">⚠️</div>
-                    <h3 className="text-lg font-bold text-gray-900">Delete Assessment?</h3>
-                    <p className="text-sm text-gray-600 max-w-xs">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Delete Assessment?</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 max-w-xs">
                       This will permanently delete this assessment and all related predictions. This action cannot be undone.
                     </p>
                     <div className="flex gap-3 justify-center">
@@ -197,7 +197,7 @@ export default function PredictionPage() {
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
                           placeholder="Enter assessment name..."
-                          className="px-3 py-1.5 border border-blue-300 rounded-lg text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+                          className="px-3 py-1.5 border border-blue-300 dark:border-blue-700 rounded-lg text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
                           autoFocus
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleSaveRename(assessment.id);
@@ -221,13 +221,13 @@ export default function PredictionPage() {
                       </div>
                     ) : (
                       <>
-                        <span className="text-sm font-bold text-gray-800">
+                        <span className="text-sm font-bold text-gray-800 dark:text-gray-100">
                           {assessment.name || `Assessment #${assessment.id}`}
                         </span>
-                        <span className="text-sm font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded">
+                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded">
                           ID: #{assessment.id}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
                           Created {formatDate(assessment.created_at)}
                         </span>
                       </>

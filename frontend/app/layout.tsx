@@ -29,7 +29,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={chelseaMarket.variable}>
+    // suppressHydrationWarning: the "dark" class is added client-side based
+    // on localStorage / system preference, so SSR will always render without
+    // it. This is the standard Next.js pattern for class-based dark mode.
+    <html lang="en" className={chelseaMarket.variable} suppressHydrationWarning>
       <body className={chelseaMarket.className}>
         <AppThemeProvider>{children}</AppThemeProvider>
       </body>

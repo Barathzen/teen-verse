@@ -21,9 +21,13 @@ interface InputProps extends SharedTextFieldProps {
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, min, max, step, ...props }, ref) => {
+    // Prevent React NaN warnings if the value is NaN
+    const safeValue = Number.isNaN(props.value) ? "" : props.value;
+
     return (
       <TextField
         {...props}
+        value={safeValue}
         inputRef={ref}
         fullWidth
         label={label}

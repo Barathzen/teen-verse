@@ -42,5 +42,5 @@ class Prediction(Base):
     )
 
     assessment = relationship(
-        "Assessment"
+        "Assessment", back_populates="prediction"
     )

@@ -66,8 +66,8 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
-        <p className="text-gray-600 mt-1">Platform-wide mental health statistics</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analytics</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Platform-wide mental health statistics</p>
       </div>
 
       {error && <Error message={error} />}
@@ -107,7 +107,7 @@ export default function AnalyticsPage() {
         {/* Risk Distribution Chart */}
         {riskDistribution && (
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
               Risk Distribution
             </h2>
             <ResponsiveContainer width="100%" height={300}>
@@ -121,11 +121,11 @@ export default function AnalyticsPage() {
             </ResponsiveContainer>
             <div className="mt-4 grid grid-cols-4 gap-2 text-sm">
               <div>
-                <p className="text-gray-600">Low</p>
+                <p className="text-gray-600 dark:text-gray-400">Low</p>
                 <p className="text-xl font-bold text-green-600">{riskDistribution.low}</p>
               </div>
               <div>
-                <p className="text-gray-600">Medium</p>
+                <p className="text-gray-600 dark:text-gray-400">Medium</p>
                 <p className="text-xl font-bold text-yellow-600">{riskDistribution.medium}</p>
               </div>
               <div>
@@ -143,7 +143,7 @@ export default function AnalyticsPage() {
         {/* Persona Distribution Chart */}
         {personaDistribution.length > 0 && (
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
               Persona Distribution
             </h2>
             <ResponsiveContainer width="100%" height={300}>
@@ -173,25 +173,25 @@ export default function AnalyticsPage() {
 
       {/* Summary Stats */}
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Key Metrics
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center py-4 border rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">Avg Risk Score</p>
-            <p className="text-3xl font-bold text-gray-900">
+          <div className="text-center py-4 border dark:border-gray-700 rounded-lg">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Avg Risk Score</p>
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {overview?.average_risk_score.toFixed(1) || "0"}
             </p>
           </div>
-          <div className="text-center py-4 border rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">Total Assessments</p>
-            <p className="text-3xl font-bold text-gray-900">
+          <div className="text-center py-4 border dark:border-gray-700 rounded-lg">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Total Assessments</p>
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {overview?.total_assessments || "0"}
             </p>
           </div>
-          <div className="text-center py-4 border rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">High Risk Users %</p>
-            <p className="text-3xl font-bold text-gray-900">
+          <div className="text-center py-4 border dark:border-gray-700 rounded-lg">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">High Risk Users %</p>
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {overview && overview.total_users > 0
                 ? (((overview.high_risk_users / overview.total_users) * 100).toFixed(1))
                 : "0"}

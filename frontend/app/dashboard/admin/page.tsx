@@ -49,8 +49,8 @@ export default function AdminPortalPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Admin Portal</h1>
-        <p className="text-gray-600 mt-1">Manage user access and roles</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Portal</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Manage user access and roles</p>
       </div>
 
       {error && <Error message={error} onDismiss={() => setError(null)} />}
@@ -59,7 +59,7 @@ export default function AdminPortalPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b">
+              <tr className="border-b dark:border-gray-700">
                 <th className="py-3 pr-4">Name</th>
                 <th className="py-3 pr-4">Email</th>
                 <th className="py-3 pr-4">Role</th>
@@ -68,11 +68,11 @@ export default function AdminPortalPage() {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id} className="border-b last:border-0">
-                  <td className="py-4 pr-4 font-medium text-gray-900">{user.name}</td>
-                  <td className="py-4 pr-4 text-gray-600">{user.email}</td>
+                <tr key={user.id} className="border-b dark:border-gray-700 last:border-0">
+                  <td className="py-4 pr-4 font-medium text-gray-900 dark:text-gray-100">{user.name}</td>
+                  <td className="py-4 pr-4 text-gray-600 dark:text-gray-400">{user.email}</td>
                   <td className="py-4 pr-4">
-                    <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-sm font-medium capitalize">
+                    <span className="inline-flex rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1 text-sm font-medium capitalize text-gray-800 dark:text-gray-200">
                       {user.role}
                     </span>
                   </td>

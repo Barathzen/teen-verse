@@ -214,8 +214,8 @@ export const SimulationEngine: React.FC = () => {
       <div className="flex items-center gap-3">
         <Zap size={32} className="text-yellow-500" />
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">What-If Simulation</h1>
-          <p className="text-gray-600 mt-1">Explore how lifestyle changes affect mental health risk</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">What-If Simulation</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Explore how lifestyle changes affect mental health risk</p>
         </div>
       </div>
 
@@ -226,7 +226,7 @@ export const SimulationEngine: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Input Form */}
           <Card className="lg:col-span-1">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Adjust Factors</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Adjust Factors</h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Simulation name */}
@@ -244,7 +244,7 @@ export const SimulationEngine: React.FC = () => {
               )}
 
               <div>
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                   Current: {assessment.sleep_hours}h
                 </p>
                 <Input
@@ -262,7 +262,7 @@ export const SimulationEngine: React.FC = () => {
               </div>
 
               <div>
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                   Current: {assessment.social_media_hours}h
                 </p>
                 <Input
@@ -280,7 +280,7 @@ export const SimulationEngine: React.FC = () => {
               </div>
 
               <div>
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                   Current: {assessment.physical_activity}h
                 </p>
                 <Input
@@ -310,7 +310,7 @@ export const SimulationEngine: React.FC = () => {
           {/* Results */}
           {result && (
             <Card className="lg:col-span-2">
-              <h2 className="text-lg font-semibold text-gray-900 mb-6">Simulation Results</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Simulation Results</h2>
 
               <div className="mb-8">
                 <ResponsiveContainer width="100%" height={250}>
@@ -333,22 +333,22 @@ export const SimulationEngine: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Current Risk</p>
-                  <p className="text-3xl font-bold text-gray-900">
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Current Risk</p>
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
                     {result.current_risk.toFixed(2)}
                   </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Projected Risk</p>
+                <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Projected Risk</p>
                   <p className="text-3xl font-bold text-blue-600">
                     {result.future_risk.toFixed(2)}
                   </p>
                 </div>
 
-                <div className={`p-4 rounded-lg ${result.risk_reduction > 0 ? "bg-green-50" : "bg-red-50"}`}>
-                  <p className="text-sm text-gray-600 mb-1">Risk Reduction</p>
+                <div className={`p-4 rounded-lg ${result.risk_reduction > 0 ? "bg-green-50 dark:bg-green-900/30" : "bg-red-50 dark:bg-red-900/30"}`}>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Risk Reduction</p>
                   <p className={`text-3xl font-bold ${result.risk_reduction > 0 ? "text-green-600" : "text-red-600"}`}>
                     {result.risk_reduction > 0 ? "−" : "+"}{Math.abs(result.risk_reduction).toFixed(2)}
                   </p>
@@ -356,7 +356,7 @@ export const SimulationEngine: React.FC = () => {
               </div>
 
               {result.risk_reduction > 0 && (
-                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg">
                   <p className="text-green-800 font-semibold">
                     ✓ Great news! These changes could reduce your risk by{" "}
                     {((result.risk_reduction / result.current_risk) * 100).toFixed(1)}%
@@ -365,7 +365,7 @@ export const SimulationEngine: React.FC = () => {
               )}
 
               {result.risk_reduction < 0 && (
-                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
                   <p className="text-red-800 font-semibold">
                     ⚠ These changes could increase your risk. Consider different adjustments.
                   </p>
@@ -378,11 +378,11 @@ export const SimulationEngine: React.FC = () => {
             <Card className="lg:col-span-2">
               <div className="flex items-center justify-center h-full text-center py-8">
                 <div>
-                  <Zap size={48} className="mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <Zap size={48} className="mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                     Adjust the factors and run a simulation
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     See how lifestyle changes could affect your mental health risk
                   </p>
                 </div>
@@ -394,11 +394,11 @@ export const SimulationEngine: React.FC = () => {
         !error && (
           <Card>
             <div className="text-center py-8">
-              <Zap size={48} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <Zap size={48} className="mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 No assessment selected
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 Go to the Predictions page and click &quot;Run Simulation&quot; on an assessment to start.
               </p>
             </div>
@@ -408,8 +408,8 @@ export const SimulationEngine: React.FC = () => {
 
       {/* ─── Simulation History ─── */}
       <div className="mt-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Clock size={22} className="text-gray-500" />
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <Clock size={22} className="text-gray-500 dark:text-gray-400" />
           Simulation History
         </h2>
 
@@ -418,9 +418,9 @@ export const SimulationEngine: React.FC = () => {
         ) : simulations.length === 0 ? (
           <Card>
             <div className="text-center py-8">
-              <Clock size={48} className="mx-auto text-gray-300 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-700 mb-1">No simulations yet</h3>
-              <p className="text-gray-500 text-sm">
+              <Clock size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+              <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-1">No simulations yet</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
                 Run your first simulation to see results here.
               </p>
             </div>
@@ -435,11 +435,11 @@ export const SimulationEngine: React.FC = () => {
                 <Card key={sim.id} className="hover:shadow-md transition duration-200 relative">
                   {/* Delete confirmation overlay */}
                   {isDeletingSim && (
-                    <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
+                    <div className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
                       <div className="text-center space-y-4 p-6">
                         <div className="text-4xl">⚠️</div>
-                        <h3 className="text-lg font-bold text-gray-900">Delete Simulation?</h3>
-                        <p className="text-sm text-gray-600 max-w-xs">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Delete Simulation?</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-xs">
                           This will permanently remove this simulation record. This cannot be undone.
                         </p>
                         <div className="flex gap-3 justify-center">
@@ -468,7 +468,7 @@ export const SimulationEngine: React.FC = () => {
                               value={editSimName}
                               onChange={(e) => setEditSimName(e.target.value)}
                               placeholder="Enter simulation name..."
-                              className="px-3 py-1.5 border border-blue-300 rounded-lg text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+                              className="px-3 py-1.5 border border-blue-300 dark:border-blue-700 rounded-lg text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
                               autoFocus
                               onKeyDown={(e) => {
                                 if (e.key === "Enter") handleSaveRenameSim(sim.id);
@@ -492,16 +492,16 @@ export const SimulationEngine: React.FC = () => {
                           </div>
                         ) : (
                           <>
-                            <span className="text-sm font-bold text-gray-800">
+                            <span className="text-sm font-bold text-gray-800 dark:text-gray-100">
                               {sim.name || `Simulation #${sim.id}`}
                             </span>
-                            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                            <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">
                               Assessment #{sim.assessment_id}
                             </span>
                           </>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {formatSimDate(sim.created_at)}
                       </p>
                     </div>
@@ -510,19 +510,19 @@ export const SimulationEngine: React.FC = () => {
                     <div className="flex gap-4 items-center">
                       <div className="text-center">
                         <p className="text-xs text-gray-400 uppercase tracking-wider">Current</p>
-                        <p className="text-lg font-bold text-gray-900">{sim.current_risk.toFixed(1)}</p>
+                        <p className="text-lg font-bold text-gray-900 dark:text-white">{sim.current_risk.toFixed(1)}</p>
                       </div>
-                      <div className="text-gray-300">→</div>
+                      <div className="text-gray-300 dark:text-gray-600">→</div>
                       <div className="text-center">
                         <p className="text-xs text-gray-400 uppercase tracking-wider">Projected</p>
                         <p className="text-lg font-bold text-blue-600">{sim.future_risk.toFixed(1)}</p>
                       </div>
                       <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
                         sim.risk_reduction > 0
-                          ? "bg-green-50 text-green-700"
+                          ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                           : sim.risk_reduction < 0
-                          ? "bg-red-50 text-red-700"
-                          : "bg-gray-50 text-gray-600"
+                          ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                          : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
                       }`}>
                         {sim.risk_reduction > 0 ? (
                           <TrendingDown size={12} />

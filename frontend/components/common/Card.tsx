@@ -3,6 +3,7 @@ import MuiCard from "@mui/material/Card";
 import MuiCardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { useTheme as useMuiTheme } from "@mui/material/styles";
 
 interface CardProps {
   children: React.ReactNode;
@@ -10,6 +11,9 @@ interface CardProps {
 }
 
 export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
+  const muiTheme = useMuiTheme();
+  const isDark = muiTheme.palette.mode === "dark";
+
   return (
     <MuiCard
       className={className}
@@ -17,8 +21,10 @@ export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
         p: 0,
         overflow: "hidden",
         backdropFilter: "blur(16px)",
-        background:
-          "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.90))",
+        background: isDark
+          ? "linear-gradient(180deg, rgba(26,29,46,0.96), rgba(26,29,46,0.90))"
+          : "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.90))",
+        transition: "background-color 0.3s ease, box-shadow 0.3s ease",
       }}
     >
       <MuiCardContent sx={{ p: 3 }}>{children}</MuiCardContent>
@@ -26,6 +32,9 @@ export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
   );
 };
 
+// ---------------------------------------------------------------------------
+// Stat cards used on the admin dashboard
+// ---------------------------------------------------------------------------
 interface StatCardProps {
   label: string;
   value: string | number;
@@ -34,10 +43,10 @@ interface StatCardProps {
 }
 
 const colorStyles = {
-  blue: { bg: "#e8f0ff", fg: "#2457f5" },
-  green: { bg: "#e7f8f2", fg: "#10b981" },
-  red: { bg: "#feeceb", fg: "#ef4444" },
-  yellow: { bg: "#fff6df", fg: "#f59e0b" },
+  blue: { bg: "#e8f0ff", bgDark: "#1e2a4a", fg: "#2457f5" },
+  green: { bg: "#e7f8f2", bgDark: "#0f2e24", fg: "#10b981" },
+  red: { bg: "#feeceb", bgDark: "#3b1616", fg: "#ef4444" },
+  yellow: { bg: "#fff6df", bgDark: "#302a10", fg: "#f59e0b" },
 };
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -46,7 +55,10 @@ export const StatCard: React.FC<StatCardProps> = ({
   icon,
   color = "blue",
 }) => {
+  const muiTheme = useMuiTheme();
+  const isDark = muiTheme.palette.mode === "dark";
   const palette = colorStyles[color];
+
   return (
     <Card className="p-4">
       <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 2 }}>
@@ -63,7 +75,7 @@ export const StatCard: React.FC<StatCardProps> = ({
             sx={{
               p: 1.5,
               borderRadius: 3,
-              backgroundColor: palette.bg,
+              backgroundColor: isDark ? palette.bgDark : palette.bg,
               color: palette.fg,
             }}
           >

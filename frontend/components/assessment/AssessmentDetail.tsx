@@ -108,8 +108,8 @@ export const AssessmentDetail: React.FC = () => {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Assessments</h1>
-          <p className="text-gray-600 mt-1">Pick an assessment to view its analysis</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Assessments</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Pick an assessment to view its analysis</p>
         </div>
 
         {error && <Error message={error} onDismiss={() => setError(null)} />}
@@ -120,8 +120,8 @@ export const AssessmentDetail: React.FC = () => {
           <div className="space-y-6">
             <Card>
               <div className="text-center py-10">
-                <p className="text-gray-600">No assessments found yet.</p>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-gray-600 dark:text-gray-400">No assessments found yet.</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                   Create your first assessment below to continue.
                 </p>
               </div>
@@ -134,13 +134,13 @@ export const AssessmentDetail: React.FC = () => {
               <Card key={item.id}>
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                       Assessment #{item.id}
                     </h2>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       Age {item.age}, {item.gender}, {item.platform_usage}
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       Created {formatDate(item.created_at)}
                     </p>
                   </div>
@@ -169,8 +169,8 @@ export const AssessmentDetail: React.FC = () => {
       <div className="space-y-6">
         <Card>
           <div className="text-center py-10 space-y-3">
-            <h1 className="text-2xl font-bold text-gray-900">Assessment Created</h1>
-            <p className="text-gray-600">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Assessment Created</h1>
+            <p className="text-gray-600 dark:text-gray-400">
               Your assessment is ready. Continue to prediction or simulation to see your results.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
@@ -208,8 +208,8 @@ export const AssessmentDetail: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Assessment Details</h1>
-          <p className="text-gray-600 mt-1">Created {formatDate(assessment.created_at)}</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Assessment Details</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Created {formatDate(assessment.created_at)}</p>
         </div>
         <div className="flex gap-2">
           {isAdmin && (
@@ -227,53 +227,53 @@ export const AssessmentDetail: React.FC = () => {
 
       {/* Basic Info */}
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <p className="text-sm text-gray-600">Age</p>
-            <p className="text-xl font-semibold text-gray-900">{assessment.age}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Age</p>
+            <p className="text-xl font-semibold text-gray-900 dark:text-white">{assessment.age}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Gender</p>
-            <p className="text-xl font-semibold text-gray-900">{assessment.gender}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Gender</p>
+            <p className="text-xl font-semibold text-gray-900 dark:text-white">{assessment.gender}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Platform</p>
-            <p className="text-xl font-semibold text-gray-900">{assessment.platform_usage}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Platform</p>
+            <p className="text-xl font-semibold text-gray-900 dark:text-white">{assessment.platform_usage}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Academic Performance</p>
-            <p className="text-xl font-semibold text-gray-900">{assessment.academic_performance}%</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Academic Performance</p>
+            <p className="text-xl font-semibold text-gray-900 dark:text-white">{assessment.academic_performance}%</p>
           </div>
         </div>
       </Card>
 
       {/* Habits & Health */}
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Habits & Health</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Habits & Health</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <p className="text-sm text-gray-600 mb-1">Social Media Hours</p>
-            <p className="text-2xl font-bold text-gray-900">{assessment.social_media_hours}h</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Social Media Hours</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{assessment.social_media_hours}h</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 mb-1">Sleep Hours</p>
-            <p className="text-2xl font-bold text-gray-900">{assessment.sleep_hours}h</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Sleep Hours</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{assessment.sleep_hours}h</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 mb-1">Physical Activity</p>
-            <p className="text-2xl font-bold text-gray-900">{assessment.physical_activity}h</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Physical Activity</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{assessment.physical_activity}h</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 mb-1">Screen Time Before Sleep</p>
-            <p className="text-2xl font-bold text-gray-900">{assessment.screen_time_before_sleep}h</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Screen Time Before Sleep</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{assessment.screen_time_before_sleep}h</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 mb-1">Stress Level</p>
-            <p className="text-2xl font-bold text-gray-900">{assessment.stress_level}/100</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Stress Level</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{assessment.stress_level}/100</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 mb-1">Social Interaction</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Social Interaction</p>
             <p className="text-2xl font-bold text-gray-900 capitalize">{assessment.social_interaction_level}</p>
           </div>
         </div>
@@ -281,14 +281,14 @@ export const AssessmentDetail: React.FC = () => {
 
       {/* Mental Health Indicators */}
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Mental Health Indicators</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Mental Health Indicators</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">Anxiety Level</p>
+          <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Anxiety Level</p>
             <p className="text-2xl font-bold text-blue-600">{assessment.anxiety_level}/100</p>
           </div>
-          <div className="bg-purple-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">Addiction Level</p>
+          <div className="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Addiction Level</p>
             <p className="text-2xl font-bold text-purple-600">{assessment.addiction_level}/100</p>
           </div>
         </div>
@@ -298,7 +298,7 @@ export const AssessmentDetail: React.FC = () => {
       {!prediction ? (
         <Card>
           <div className="text-center py-8">
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               {isAdmin
                 ? "Generate a risk prediction for this assessment"
                 : "No prediction has been generated for this assessment yet."}
@@ -317,10 +317,10 @@ export const AssessmentDetail: React.FC = () => {
       ) : (
         <>
           <Card className={riskCategoryInfo?.bgColor}>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Risk Prediction</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Risk Prediction</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <p className="text-sm text-gray-600 mb-2">Risk Score</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Risk Score</p>
                 <p className={`text-5xl font-bold ${riskCategoryInfo?.color}`}>
                   {formatRiskScore(prediction.risk_score)}
                 </p>
@@ -330,14 +330,14 @@ export const AssessmentDetail: React.FC = () => {
               </div>
               <div className="flex flex-col justify-center">
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-1">Confidence Score</p>
-                  <p className="text-3xl font-bold text-gray-900">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Confidence Score</p>
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
                     {(prediction.confidence_score * 100).toFixed(1)}%
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Predicted Label</p>
-                  <p className="text-3xl font-bold text-gray-900">{prediction.predicted_label}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Predicted Label</p>
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white">{prediction.predicted_label}</p>
                 </div>
               </div>
             </div>
@@ -346,7 +346,7 @@ export const AssessmentDetail: React.FC = () => {
           {/* Factor Impact Analysis */}
           {explanation && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 mb-6">Factor Impact Analysis</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Factor Impact Analysis</h2>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -362,13 +362,13 @@ export const AssessmentDetail: React.FC = () => {
           {/* Persona */}
           {persona && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Persona Classification</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Persona Classification</h2>
               <div className="flex items-center gap-4">
                 <div className="text-4xl">🎭</div>
                 <div>
-                  <p className="text-sm text-gray-600">Persona</p>
-                  <p className="text-2xl font-bold text-gray-900">{persona.persona_name}</p>
-                  <p className="text-sm text-gray-600 mt-1">Cluster ID: {persona.cluster_id}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Persona</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{persona.persona_name}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Cluster ID: {persona.cluster_id}</p>
                 </div>
               </div>
             </Card>

@@ -112,16 +112,16 @@ export const AssessmentForm: React.FC = () => {
   return (
     <Card className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Create Assessment</h1>
-        <p className="text-gray-600 mt-1">Complete this form to get started</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create Assessment</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Complete this form to get started</p>
       </div>
 
       {error && <Error message={error} onDismiss={() => setError(null)} />}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Info */}
-        <div className="border-b pb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+        <div className="border-b dark:border-gray-700 pb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Age"
@@ -146,8 +146,8 @@ export const AssessmentForm: React.FC = () => {
         </div>
 
         {/* Social Media & Screen Time */}
-        <div className="border-b pb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Social Media & Screen Time</h2>
+        <div className="border-b dark:border-gray-700 pb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Social Media & Screen Time</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Daily Social Media Hours"
@@ -185,8 +185,8 @@ export const AssessmentForm: React.FC = () => {
         </div>
 
         {/* Sleep & Activity */}
-        <div className="border-b pb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Sleep & Activity</h2>
+        <div className="border-b dark:border-gray-700 pb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Sleep & Activity</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Sleep Hours Per Night"
@@ -216,8 +216,8 @@ export const AssessmentForm: React.FC = () => {
         </div>
 
         {/* Academic & Mental Health */}
-        <div className="border-b pb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Academic & Mental Health</h2>
+        <div className="border-b dark:border-gray-700 pb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Academic & Mental Health</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Academic Performance (0-100)"

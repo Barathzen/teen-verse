@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/components/providers/ThemeProvider";
 import { Card } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/FormElements";
@@ -10,10 +11,12 @@ import { Error } from "@/components/common/Loading";
 import { validateEmail, validatePassword, validateName } from "@/utils/validators";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
+import { Sun, Moon } from "lucide-react";
 
 export const RegisterForm: React.FC = () => {
   const router = useRouter();
   const { register, isLoading, error, clearError } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,11 +63,20 @@ export const RegisterForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-[#0f1117] dark:to-[#1a1d2e] p-4 transition-colors duration-300">
+      {/* Theme toggle floating button */}
+      <button
+        onClick={toggleTheme}
+        className="fixed top-4 right-4 p-2 rounded-lg bg-white dark:bg-gray-800 shadow-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors z-50"
+        aria-label="Toggle theme"
+      >
+        {isDark ? <Sun size={20} /> : <Moon size={20} />}
+      </button>
+
       <Card className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">TeenVerse</h1>
-          <p className="text-gray-600">Create your account</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">TeenVerse</h1>
+          <p className="text-gray-600 dark:text-gray-400">Create your account</p>
         </div>
 
         {error && <Error message={error} onDismiss={clearError} />}
@@ -115,9 +127,9 @@ export const RegisterForm: React.FC = () => {
           </Button>
         </form>
 
-        <p className="text-center text-gray-600 text-sm mt-6">
+        <p className="text-center text-gray-600 dark:text-gray-400 text-sm mt-6">
           Already have an account?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline font-medium">
+          <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
             Sign in
           </Link>
         </p>

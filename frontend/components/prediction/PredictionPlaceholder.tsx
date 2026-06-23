@@ -13,10 +13,10 @@ export const PredictionPlaceholder: React.FC = () => {
   return (
     <div className="text-center py-12">
       <div className="text-5xl mb-4">🔮</div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
         No predictions available
       </h3>
-      <p className="text-gray-600 mb-6">
+      <p className="text-gray-600 dark:text-gray-400 mb-6">
         Generate a risk prediction by creating an assessment first.
       </p>
       <Link href="/dashboard/assessment" className="inline-block">

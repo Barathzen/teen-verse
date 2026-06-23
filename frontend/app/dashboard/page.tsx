@@ -70,8 +70,8 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">Welcome back to TeenVerse</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome back to TeenVerse</p>
         </div>
         <Link href="/dashboard/assessment">
           <Button>New Assessment</Button>
@@ -115,14 +115,20 @@ export default function DashboardPage() {
         {/* Risk Distribution */}
         {riskDistribution && (
           <Card>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Risk Distribution</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Risk Distribution</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={riskChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="value" fill="#3b82f6" />
+                <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.1} />
+                <XAxis dataKey="name" tick={{ fill: "currentColor", fontSize: 12 }} />
+                <YAxis tick={{ fill: "currentColor", fontSize: 12 }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "var(--tooltip-bg, #fff)",
+                    border: "1px solid var(--tooltip-border, #e5e7eb)",
+                    borderRadius: 8,
+                  }}
+                />
+                <Bar dataKey="value" fill="#3b82f6" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -131,7 +137,7 @@ export default function DashboardPage() {
         {/* Persona Distribution */}
         {personaDistribution.length > 0 && (
           <Card>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Persona Distribution</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Persona Distribution</h2>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -156,7 +162,7 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <Card>
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link href="/dashboard/assessment">
             <Button variant="outline" className="w-full">
