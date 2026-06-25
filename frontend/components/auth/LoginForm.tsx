@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { Card } from "@/components/common/Card";
@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { Sun, Moon } from "lucide-react";
 import { auth, googleProvider } from "@/config/firebase";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithRedirect, getRedirectResult } from "firebase/auth";
 
 export const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -20,6 +20,27 @@ export const LoginForm: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Handle Google redirect result when user returns from Google sign-in
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result) {
+          const user = result.user;
+          const userEmail = user.email || "";
+          const userName = user.displayName || "Google User";
+          const userUid = user.uid;
+
+          await useAuthStore.getState().googleLogin(userEmail, userName, userUid);
+          const currentUser = useAuthStore.getState().user;
+          router.push(currentUser?.role === "admin" ? "/dashboard" : "/dashboard/assessment");
+        }
+      })
+      .catch((error) => {
+        console.error("Google redirect error:", error);
+      });
+  }, [router]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,19 +57,14 @@ export const LoginForm: React.FC = () => {
 
   const handleGoogleLogin = async () => {
     clearError();
+    setGoogleLoading(true);
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      
-      const userEmail = user.email || "";
-      const userName = user.displayName || "Google User";
-      const userUid = user.uid;
-      
-      await useAuthStore.getState().googleLogin(userEmail, userName, userUid);
-      const currentUser = useAuthStore.getState().user;
-      router.push(currentUser?.role === "admin" ? "/dashboard" : "/dashboard/assessment");
+      await signInWithRedirect(auth, googleProvider);
+      // User will be redirected to Google, then back to this page.
+      // The result is handled in the useEffect above via getRedirectResult.
     } catch (error: any) {
-      console.error(error);
+      console.error("Google sign-in error:", error);
+      setGoogleLoading(false);
     }
   };
 
@@ -105,7 +121,7 @@ export const LoginForm: React.FC = () => {
           </div>
         </div>
 
-        <Button type="button" variant="outline" onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-2">
+        <Button type="button" variant="outline" onClick={handleGoogleLogin} isLoading={googleLoading} className="w-full flex items-center justify-center gap-2">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
