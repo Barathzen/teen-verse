@@ -11,7 +11,6 @@ import { formatDate, getRiskCategory, formatRiskScore } from "@/utils/formatters
 import { RISK_CATEGORIES } from "@/utils/constants";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { useAuth } from "@/hooks/useAuth";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export const AssessmentDetail: React.FC = () => {
@@ -127,7 +126,7 @@ export const AssessmentDetail: React.FC = () => {
               <div className="text-center py-10">
                 <p className="text-gray-600 dark:text-gray-400">No assessments found yet.</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                  Click the "Create Assessment" button above to get started.
+                  Click the &quot;Create Assessment&quot; button above to get started.
                 </p>
               </div>
             </Card>
