@@ -1,19 +1,13 @@
-"use client";
+import { AssessmentForm } from "@/components/assessment/AssessmentForm";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+export const metadata = {
+  title: "Create Assessment - TeenVerse",
+};
 
-/**
- * The `/dashboard/assessment/create` route was previously empty. To provide a
- * smooth user experience we automatically redirect to the main assessment
- * creation page (`/dashboard/assessment`).
- */
-export default function CreateRedirect() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace("/dashboard/assessment");
-  }, [router]);
-
-  return null;
+export default function CreateAssessmentPage() {
+  return (
+    <div className="max-w-4xl mx-auto">
+      <AssessmentForm />
+    </div>
+  );
 }

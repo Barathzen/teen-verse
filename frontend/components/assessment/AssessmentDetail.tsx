@@ -11,7 +11,7 @@ import { formatDate, getRiskCategory, formatRiskScore } from "@/utils/formatters
 import { RISK_CATEGORIES } from "@/utils/constants";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { AssessmentForm } from "@/components/assessment/AssessmentForm";
+import { useAuth } from "@/hooks/useAuth";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export const AssessmentDetail: React.FC = () => {
@@ -127,11 +127,10 @@ export const AssessmentDetail: React.FC = () => {
               <div className="text-center py-10">
                 <p className="text-gray-600 dark:text-gray-400">No assessments found yet.</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                  Create your first assessment below to continue.
+                  Click the "Create Assessment" button above to get started.
                 </p>
               </div>
             </Card>
-            <AssessmentForm />
           </div>
         ) : (
           <div className="grid gap-4">
@@ -174,21 +173,20 @@ export const AssessmentDetail: React.FC = () => {
       <div className="space-y-6">
         <Card>
           <div className="text-center py-10 space-y-3">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Assessment Created</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Assessment Ready</h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Your assessment is ready. Continue to prediction or simulation to see your results.
+              Your assessment details have been saved. Continue to prediction or simulation to see your results.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-              <Button onClick={() => router.push("/dashboard/prediction")}>
+              <Button onClick={() => router.push(`/dashboard/prediction?assessment=${assessmentId}`)}>
                 View Prediction
               </Button>
-              <Button variant="outline" onClick={() => router.push("/dashboard/simulation")}>
+              <Button variant="outline" onClick={() => router.push(`/dashboard/simulation?assessment=${assessmentId}`)}>
                 Run Simulation
               </Button>
             </div>
           </div>
         </Card>
-        <AssessmentForm />
       </div>
     );
   }
