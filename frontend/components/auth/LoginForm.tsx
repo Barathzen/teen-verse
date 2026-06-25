@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { Card } from "@/components/common/Card";
@@ -11,8 +11,7 @@ import { Error } from "@/components/common/Loading";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { Sun, Moon } from "lucide-react";
-import { auth, googleProvider } from "@/config/firebase";
-import { signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 
 export const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -20,27 +19,7 @@ export const LoginForm: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [googleLoading, setGoogleLoading] = useState(false);
-
-  // Handle Google redirect result when user returns from Google sign-in
-  useEffect(() => {
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result) {
-          const user = result.user;
-          const userEmail = user.email || "";
-          const userName = user.displayName || "Google User";
-          const userUid = user.uid;
-
-          await useAuthStore.getState().googleLogin(userEmail, userName, userUid);
-          const currentUser = useAuthStore.getState().user;
-          router.push(currentUser?.role === "admin" ? "/dashboard" : "/dashboard/assessment");
-        }
-      })
-      .catch((error) => {
-        console.error("Google redirect error:", error);
-      });
-  }, [router]);
+  const { handleGoogleLogin, googleLoading, googleError } = useGoogleAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,19 +31,6 @@ export const LoginForm: React.FC = () => {
       router.push(currentUser?.role === "admin" ? "/dashboard" : "/dashboard/assessment");
     } catch (error) {
       // Error is handled by store
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    clearError();
-    setGoogleLoading(true);
-    try {
-      await signInWithRedirect(auth, googleProvider);
-      // User will be redirected to Google, then back to this page.
-      // The result is handled in the useEffect above via getRedirectResult.
-    } catch (error: any) {
-      console.error("Google sign-in error:", error);
-      setGoogleLoading(false);
     }
   };
 
@@ -87,6 +53,7 @@ export const LoginForm: React.FC = () => {
         </div>
 
         {error && <Error message={error} onDismiss={clearError} />}
+        {googleError && <Error message={googleError} onDismiss={() => {}} />}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
