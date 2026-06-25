@@ -107,9 +107,14 @@ export const AssessmentDetail: React.FC = () => {
   if (!Number.isFinite(assessmentId)) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Assessments</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Pick an assessment to view its analysis</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Assessments</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">Pick an assessment to view its analysis</p>
+          </div>
+          <Button onClick={() => router.push("/dashboard/assessment/create")}>
+            Create Assessment
+          </Button>
         </div>
 
         {error && <Error message={error} onDismiss={() => setError(null)} />}
