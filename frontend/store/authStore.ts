@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { User, TokenResponse } from "@/types/api";
 import { apiClient } from "@/services/api";
+import { auth } from "@/config/firebase";
+import { signOut } from "firebase/auth";
 
 interface AuthState {
   user: User | null;
@@ -130,6 +132,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: () => {
+    // Sign out from Firebase to prevent automatic re-login via onAuthStateChanged
+    signOut(auth).catch(console.error);
+    
     localStorage.removeItem("authToken");
     if (typeof window !== "undefined") {
       document.cookie = "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
