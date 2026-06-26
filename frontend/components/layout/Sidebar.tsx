@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/common/Button";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { useAssessmentStore } from "@/store/assessmentStore";
+import { useChatbotStore } from "@/store/chatbotStore";
 import {
   Menu,
   X,
@@ -47,8 +49,13 @@ export const Sidebar: React.FC = () => {
   });
 
   const handleLogout = () => {
+    // Flush details
+    useAssessmentStore.getState().setAssessments([]);
+    useAssessmentStore.getState().setCurrentAssessment(null);
+    useChatbotStore.getState().clearMessages();
+    
     logout();
-    router.push("/login");
+    router.replace("/login"); // Use replace so the back button doesn't go to dashboard
   };
 
   return (
