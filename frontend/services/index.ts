@@ -146,3 +146,20 @@ export const adminService = {
     return response.data;
   },
 };
+
+// Questionnaire endpoints
+export const questionnaireService = {
+  async generate(): Promise<{ questions: string[] }> {
+    const response = await apiClient.get<{ questions: string[] }>("/questionnaire/generate");
+    return response.data;
+  },
+  
+  async analyze(questions: string[], answers: string[], assessment_data: any): Promise<{ message: string; assessment_id: number }> {
+    const response = await apiClient.post<{ message: string; assessment_id: number }>("/questionnaire/analyze", {
+      questions,
+      answers,
+      assessment_data,
+    });
+    return response.data;
+  },
+};

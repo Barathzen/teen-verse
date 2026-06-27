@@ -11,7 +11,7 @@ import { Error } from "@/components/common/Loading";
 import { validateEmail, validatePassword, validateName } from "@/utils/validators";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Home } from "lucide-react";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 
 export const RegisterForm: React.FC = () => {
@@ -67,6 +67,15 @@ export const RegisterForm: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-[#0f1117] dark:to-[#1a1d2e] p-4 transition-colors duration-300">
+      {/* Home floating button */}
+      <Link
+        href="/"
+        className="fixed top-4 left-4 p-2 rounded-lg bg-white dark:bg-gray-800 shadow-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors z-50 flex items-center justify-center"
+        aria-label="Go to home"
+      >
+        <Home size={20} />
+      </Link>
+
       {/* Theme toggle floating button */}
       <button
         onClick={toggleTheme}

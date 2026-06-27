@@ -42,7 +42,7 @@ export const Sidebar: React.FC = () => {
   const isAdmin = user?.role === "admin";
   const filteredMenuItems = menuItems.filter((item) => {
     if (!isAdmin) {
-      // Regular users can use the assessment -> prediction -> simulation flow
+      // Regular users can use the assessment -> prediction -> simulation flow + Chatbot
       return ["Assessment", "Prediction", "Simulation", "Chatbot"].includes(item.name);
     }
     return true;

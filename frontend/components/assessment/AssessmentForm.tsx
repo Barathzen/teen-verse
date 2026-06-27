@@ -1,22 +1,27 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import { Input, Select } from "@/components/common/FormElements";
 import { Error } from "@/components/common/Loading";
-import { assessmentService } from "@/services/index";
+import { assessmentService, questionnaireService } from "@/services/index";
 import { useAssessmentStore } from "@/store/assessmentStore";
-import { GENDERS, PLATFORMS, SOCIAL_INTERACTION_LEVELS } from "@/utils/constants";
+import { GENDERS, PLATFORMS } from "@/utils/constants";
 import { validateAge, validateHours, validateScore } from "@/utils/validators";
 import { AssessmentCreate } from "@/types/api";
+import { Sparkles } from "lucide-react";
 
 export const AssessmentForm: React.FC = () => {
   const router = useRouter();
   const { addAssessment } = useAssessmentStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<string[]>([]);
+
   const [formData, setFormData] = useState<AssessmentCreate>({
     age: 15,
     gender: "Male",
@@ -34,44 +39,30 @@ export const AssessmentForm: React.FC = () => {
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const data = await questionnaireService.generate();
+        setQuestions(data.questions);
+        setAnswers(new Array(data.questions.length).fill(""));
+      } catch (err: any) {
+        setError("Failed to load AI questionnaire. Please try refreshing.");
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+    fetchQuestions();
+  }, []);
+
   const validate = (): boolean => {
     const errors: Record<string, string> = {};
 
-    if (!validateAge(formData.age)) {
-      errors.age = "Age must be between 10 and 25";
-    }
-
-    if (!validateHours(formData.social_media_hours)) {
-      errors.social_media_hours = "Must be between 0 and 24 hours";
-    }
-
-    if (!validateHours(formData.sleep_hours)) {
-      errors.sleep_hours = "Must be between 0 and 24 hours";
-    }
-
-    if (!validateHours(formData.screen_time_before_sleep)) {
-      errors.screen_time_before_sleep = "Must be between 0 and 24 hours";
-    }
-
-    if (!validateScore(formData.academic_performance)) {
-      errors.academic_performance = "Must be between 0 and 100";
-    }
-
-    if (!validateHours(formData.physical_activity)) {
-      errors.physical_activity = "Must be between 0 and 24 hours";
-    }
-
-    if (!validateScore(formData.stress_level)) {
-      errors.stress_level = "Must be between 0 and 100";
-    }
-
-    if (!validateScore(formData.anxiety_level)) {
-      errors.anxiety_level = "Must be between 0 and 100";
-    }
-
-    if (!validateScore(formData.addiction_level)) {
-      errors.addiction_level = "Must be between 0 and 100";
-    }
+    if (!validateAge(formData.age)) errors.age = "Age must be between 10 and 25";
+    if (!validateHours(formData.social_media_hours)) errors.social_media_hours = "Must be between 0 and 24 hours";
+    if (!validateHours(formData.sleep_hours)) errors.sleep_hours = "Must be between 0 and 24 hours";
+    if (!validateHours(formData.screen_time_before_sleep)) errors.screen_time_before_sleep = "Must be between 0 and 24 hours";
+    if (!validateScore(formData.academic_performance)) errors.academic_performance = "Must be between 0 and 100";
+    if (!validateHours(formData.physical_activity)) errors.physical_activity = "Must be between 0 and 24 hours";
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -81,14 +72,17 @@ export const AssessmentForm: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    const numValue = ["age", "social_media_hours", "sleep_hours", "screen_time_before_sleep", "academic_performance", "physical_activity", "stress_level", "anxiety_level", "addiction_level"].includes(name)
+    const numValue = ["age", "social_media_hours", "sleep_hours", "screen_time_before_sleep", "academic_performance", "physical_activity"].includes(name)
       ? parseFloat(value)
       : value;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: numValue,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: numValue }));
+  };
+
+  const handleAnswerChange = (index: number, value: string) => {
+    const newAnswers = [...answers];
+    newAnswers[index] = value;
+    setAnswers(newAnswers);
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -96,12 +90,19 @@ export const AssessmentForm: React.FC = () => {
     setError(null);
 
     if (!validate()) return;
+    if (answers.some((a) => !a.trim())) {
+      setError("Please answer all the AI questions before submitting.");
+      return;
+    }
 
     setIsLoading(true);
     try {
-      const assessment = await assessmentService.create(formData);
-      addAssessment(assessment);
-      router.push(`/dashboard/assessment?id=${assessment.id}`);
+      // Analyze answers and create assessment via the AI backend route
+      const response = await questionnaireService.analyze(questions, answers, formData);
+      // Fetch the newly created assessment to update the store
+      const newAssessment = await assessmentService.get(response.assessment_id);
+      addAssessment(newAssessment);
+      router.push(`/dashboard/assessment?id=${newAssessment.id}`);
     } catch (err: any) {
       setError(err?.response?.data?.detail || "Failed to create assessment");
     } finally {
@@ -215,10 +216,10 @@ export const AssessmentForm: React.FC = () => {
           </div>
         </div>
 
-        {/* Academic & Mental Health */}
+        {/* Academic & Questionnaire */}
         <div className="border-b dark:border-gray-700 pb-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Academic & Mental Health</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Academic & AI Analysis</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <Input
               label="Academic Performance (0-100)"
               name="academic_performance"
@@ -230,53 +231,52 @@ export const AssessmentForm: React.FC = () => {
               error={validationErrors.academic_performance}
               required
             />
-            <Select
-              label="Social Interaction Level"
-              name="social_interaction_level"
-              value={formData.social_interaction_level}
-              onChange={handleChange}
-              options={SOCIAL_INTERACTION_LEVELS.map((l) => ({ value: l.toLowerCase(), label: l }))}
-              required
-            />
-            <Input
-              label="Stress Level (0-100)"
-              name="stress_level"
-              type="number"
-              min="0"
-              max="100"
-              value={formData.stress_level}
-              onChange={handleChange}
-              error={validationErrors.stress_level}
-              required
-            />
-            <Input
-              label="Anxiety Level (0-100)"
-              name="anxiety_level"
-              type="number"
-              min="0"
-              max="100"
-              value={formData.anxiety_level}
-              onChange={handleChange}
-              error={validationErrors.anxiety_level}
-              required
-            />
-            <Input
-              label="Addiction Level (0-100)"
-              name="addiction_level"
-              type="number"
-              min="0"
-              max="100"
-              value={formData.addiction_level}
-              onChange={handleChange}
-              error={validationErrors.addiction_level}
-              required
-            />
+          </div>
+
+          {/* AI Questionnaire Section */}
+          <div className="mt-8 space-y-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Sparkles className="text-blue-500" size={24} />
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">AI Psychological Assessment</h3>
+            </div>
+            
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Please answer the following questions honestly to help our AI understand your mental wellbeing, stress levels, and social interactions.
+            </p>
+
+            {isGenerating ? (
+              <div className="text-center py-8 text-blue-500 animate-pulse">
+                Generating personalized questions...
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {questions.map((question, index) => (
+                  <div key={index} className="space-y-2">
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {index + 1}. {question}
+                    </label>
+                    <textarea
+                      value={answers[index]}
+                      onChange={(e) => handleAnswerChange(index, e.target.value)}
+                      placeholder="Type your answer here..."
+                      className="w-full min-h-[80px] p-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-y text-gray-900 dark:text-white"
+                      required
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex gap-4">
-          <Button type="submit" isLoading={isLoading} className="px-8">
+          <Button 
+            type="submit" 
+            isLoading={isLoading} 
+            disabled={isGenerating || answers.length === 0 || answers.some(a => !a.trim())}
+            className="px-8"
+          >
             Create Assessment
           </Button>
           <Button
