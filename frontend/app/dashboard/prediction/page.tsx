@@ -167,8 +167,7 @@ export default function PredictionPage() {
               {/* Delete confirmation overlay */}
               {isDeleting && (
                 <div className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
-                  <div className="text-center space-y-4 p-6">
-                    <div className="text-4xl">⚠️</div>
+                  <div className="text-center space-y-2 p-4">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">Delete Assessment?</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 max-w-xs">
                       This will permanently delete this assessment and all related predictions. This action cannot be undone.
@@ -255,29 +254,53 @@ export default function PredictionPage() {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-1">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-y-4 gap-x-6 pt-2 pb-2 border-t border-gray-100 dark:border-gray-800 mt-2">
                     <div>
-                      <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Demographics</p>
+                      <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Demographics</p>
                       <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
-                        {assessment.age} y/o • {assessment.gender}
+                        {assessment.age}y • {assessment.gender}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Social Platform</p>
+                      <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Social Media</p>
                       <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
-                        {assessment.platform_usage}
+                        {assessment.platform_usage} ({assessment.social_media_hours}h)
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Social Media Hours</p>
+                      <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Sleep Profile</p>
                       <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
-                        {assessment.social_media_hours}h/day
+                        {assessment.sleep_hours}h (Screen: {assessment.screen_time_before_sleep}h)
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Academic Performance</p>
+                      <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Mental Health</p>
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
+                        Stress: {assessment.stress_level} | Anx: {assessment.anxiety_level}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Addiction Level</p>
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
+                        {assessment.addiction_level} / 100
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Academics</p>
                       <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
                         {assessment.academic_performance}%
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Physical Activity</p>
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
+                        {assessment.physical_activity} / 10
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Social Interaction</p>
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5 capitalize">
+                        {assessment.social_interaction_level}
                       </p>
                     </div>
                   </div>
@@ -341,16 +364,16 @@ export default function PredictionPage() {
                     )}
 
                     {prediction && (
-                      <Link href={`/dashboard/simulation?assessment=${assessment.id}`}>
+                      <Link href={`/dashboard/assessment?id=${assessment.id}`}>
                         <Button variant="outline" className="w-full whitespace-nowrap text-xs">
-                          View Details
+                          View Analysis
                         </Button>
                       </Link>
                     )}
 
-                    {/* Admin controls */}
-                    {isAdmin && !isEditing && (
-                      <div className="flex gap-2 justify-center">
+                    {/* User controls (rename/delete) */}
+                    {!isEditing && (
+                      <div className="flex gap-2 justify-center mt-1">
                         <button
                           onClick={() => handleStartRename(assessment)}
                           className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-lg transition"
@@ -358,13 +381,15 @@ export default function PredictionPage() {
                         >
                           <Pencil size={14} />
                         </button>
-                        <button
-                          onClick={() => setDeleteConfirmId(assessment.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition"
-                          title="Delete assessment"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                        {isAdmin && (
+                          <button
+                            onClick={() => setDeleteConfirmId(assessment.id)}
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition"
+                            title="Delete assessment"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>

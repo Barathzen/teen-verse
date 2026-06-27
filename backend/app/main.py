@@ -17,6 +17,7 @@ from app.api.routes import (
     persona,
     analytics,
     chatbot,
+    journal,
 )
 from app.api import prediction
 from app.core.database import Base, engine, SessionLocal
@@ -76,6 +77,7 @@ app.include_router(simulation.router)
 app.include_router(persona.router)
 app.include_router(analytics.router)
 app.include_router(chatbot.router)
+app.include_router(journal.router)
 
 
 @app.get("/", tags=["Health"])

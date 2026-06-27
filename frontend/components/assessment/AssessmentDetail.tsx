@@ -167,28 +167,6 @@ export const AssessmentDetail: React.FC = () => {
     );
   }
 
-  if (!isAdmin) {
-    return (
-      <div className="space-y-6">
-        <Card>
-          <div className="text-center py-10 space-y-3">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Assessment Ready</h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Your assessment details have been saved. Continue to prediction or simulation to see your results.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-              <Button onClick={() => router.push(`/dashboard/prediction?assessment=${assessmentId}`)}>
-                View Prediction
-              </Button>
-              <Button variant="outline" onClick={() => router.push(`/dashboard/simulation?assessment=${assessmentId}`)}>
-                Run Simulation
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
-    );
-  }
 
   if (!assessment) return <Error message="Assessment not found" />;
 

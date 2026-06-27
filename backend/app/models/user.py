@@ -38,6 +38,9 @@ class User(Base):
         default="user",
         nullable=False
     )
+    
+    guardian_name = Column(String, nullable=True)
+    guardian_email = Column(String, nullable=True)
 
     created_at = Column(
         DateTime(timezone=True),

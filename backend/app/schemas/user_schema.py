@@ -11,6 +11,10 @@ class UserResponse(BaseModel):
 
     role: str
 
+    guardian_name: str | None = None
+
+    guardian_email: str | None = None
+
     created_at: datetime
 
     class Config:

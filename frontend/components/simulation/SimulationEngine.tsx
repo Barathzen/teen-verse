@@ -358,8 +358,8 @@ export const SimulationEngine: React.FC = () => {
               {result.risk_reduction > 0 && (
                 <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg">
                   <p className="text-green-800 font-semibold">
-                    ✓ Great news! These changes could reduce your risk by{" "}
-                    {((result.risk_reduction / result.current_risk) * 100).toFixed(1)}%
+                    ✓ Great news! These changes could reduce your risk score by{" "}
+                    {result.risk_reduction.toFixed(2)} points
                   </p>
                 </div>
               )}

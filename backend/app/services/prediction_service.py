@@ -67,6 +67,8 @@ def create_prediction(db: Session, assessment_id: int) -> Prediction:
     Raises:
         HTTPException: If the assessment is not found.
     """
+    from app.models.user import User
+    
     assessment = (
         db.query(Assessment)
         .filter(Assessment.id == assessment_id)
@@ -105,6 +107,16 @@ def create_prediction(db: Session, assessment_id: int) -> Prediction:
         prediction.risk_score,
         prediction.risk_category,
     )
+
+    # ── Trusted Guardian Circuit Breaker ──────────────────────────────
+    if prediction.risk_score >= 75:
+        user = db.query(User).filter(User.id == assessment.user_id).first()
+        if user and user.guardian_email:
+            logger.warning(
+                "🚨 CIRCUIT BREAKER TRIGGERED: User %d hit critical risk (%.1f). "
+                "Simulating alert sent to Guardian: %s (%s)",
+                user.id, prediction.risk_score, user.guardian_name, user.guardian_email
+            )
 
     return prediction
 
