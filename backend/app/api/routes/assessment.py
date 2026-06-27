@@ -115,16 +115,16 @@ def update_assessment(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Update assessment fields (admin only). Currently supports renaming."""
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail="Only administrators can update assessments.",
-        )
-
+    """Update assessment fields. Currently supports renaming."""
     assessment = get_assessment(db, assessment_id)
     if not assessment:
         raise HTTPException(status_code=404, detail="Assessment not found")
+
+    if current_user.role != "admin" and assessment.user_id != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized to update this assessment.",
+        )
 
     # Apply updates
     update_dict = update_data.model_dump(exclude_unset=True)

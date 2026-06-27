@@ -101,7 +101,7 @@ def google_login(
         logger.exception("Google Login failed")
         raise HTTPException(
             status_code=500,
-            detail="Google Login failed"
+            detail=f"Google Login failed: {str(e)}"
         )
 
 
