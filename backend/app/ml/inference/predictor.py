@@ -31,12 +31,12 @@ def predict(dataframe):
 
     return {
         "prediction": int(prediction),
-        "risk_score": round(
+        "risk_score": float(round(
             probability * 100,
             2
-        ),
-        "confidence_score": round(
+        )),
+        "confidence_score": float(round(
             probability,
             4
-        )
+        )),
     }

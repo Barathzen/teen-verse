@@ -23,8 +23,8 @@ def predict_risk(
 
     return {
         "prediction": int(prediction),
-        "risk_score": risk_score,
-        "confidence_score": probability
+        "risk_score": float(risk_score),
+        "confidence_score": float(probability)
     }
 
 def get_risk_category(

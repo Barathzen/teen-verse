@@ -125,11 +125,11 @@ def simulate(
             assessment_id=assessment.id,
             name=request.name or "",
             created_by=current_user.id,
-            current_risk=current_risk,
-            future_risk=future_risk,
-            modified_sleep_hours=request.sleep_hours,
-            modified_social_media_hours=request.social_media_hours,
-            modified_physical_activity=request.physical_activity,
+            current_risk=float(current_risk),
+            future_risk=float(future_risk),
+            modified_sleep_hours=float(request.sleep_hours),
+            modified_social_media_hours=float(request.social_media_hours),
+            modified_physical_activity=float(request.physical_activity),
         )
 
         db.add(simulation)
