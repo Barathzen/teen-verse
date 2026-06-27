@@ -5,6 +5,10 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 
+# .env file path – only used if the file actually exists (local dev).
+# On Render / production, environment variables are set via the dashboard.
+_env_file = BASE_DIR / ".env"
+
 
 class Settings(BaseSettings):
 
@@ -12,9 +16,11 @@ class Settings(BaseSettings):
 
     API_V1_STR: str = "/api/v1"
 
+    # DATABASE_URL is REQUIRED.  It must be supplied either via the .env
+    # file (local dev) or as a system environment variable (Render).
     DATABASE_URL: str
 
-    SECRET_KEY: str
+    SECRET_KEY: str = "change-me-in-production"
 
     ADMIN_NAME: str | None = None
     ADMIN_EMAIL: str | None = None
@@ -31,7 +37,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     class Config:
-        env_file = BASE_DIR / ".env"
+        env_file = str(_env_file) if _env_file.exists() else None
+        env_file_encoding = "utf-8"
 
 
 @lru_cache

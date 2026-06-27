@@ -2,57 +2,61 @@
 Migration script to add 'name' column to assessments table
 and 'name' + 'created_by' columns to simulations table.
 
-Run with: python app/migrations/add_name_columns.py
+Uses SQLAlchemy so it works with both SQLite and PostgreSQL.
+
+Run with: python -m app.migrations.add_name_columns
 """
 
-import sqlite3
-import os
+from sqlalchemy import text
 
-# Path relative to the backend directory
-DB_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "teenverse.db")
-DB_PATH = os.path.abspath(DB_PATH)
+from app.core.database import engine
+
+
+def _column_exists(conn, table: str, column: str) -> bool:
+    """Check if a column exists in a PostgreSQL table."""
+    result = conn.execute(
+        text(
+            "SELECT 1 FROM information_schema.columns "
+            "WHERE table_name = :table AND column_name = :column"
+        ),
+        {"table": table, "column": column},
+    )
+    return result.fetchone() is not None
 
 
 def migrate():
-    if not os.path.exists(DB_PATH):
-        print(f"Database file not found: {DB_PATH}")
-        return
+    print(f"Migrating database: {engine.url}")
 
-    print(f"Migrating database: {DB_PATH}")
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    with engine.begin() as conn:
+        # -- assessments.name ---------------------------------------------------
+        if not _column_exists(conn, "assessments", "name"):
+            print("Adding 'name' column to assessments table...")
+            conn.execute(text("ALTER TABLE assessments ADD COLUMN name VARCHAR(255) DEFAULT ''"))
+            print("  ✓ Done")
+        else:
+            print("  • 'name' column already exists in assessments table")
 
-    # Check existing columns in assessments
-    cursor.execute("PRAGMA table_info(assessments)")
-    assessment_columns = [row[1] for row in cursor.fetchall()]
-    
-    if "name" not in assessment_columns:
-        print("Adding 'name' column to assessments table...")
-        cursor.execute("ALTER TABLE assessments ADD COLUMN name TEXT DEFAULT ''")
-        print("  ✓ Done")
-    else:
-        print("  • 'name' column already exists in assessments table")
+        # -- simulations.name ---------------------------------------------------
+        if not _column_exists(conn, "simulations", "name"):
+            print("Adding 'name' column to simulations table...")
+            conn.execute(text("ALTER TABLE simulations ADD COLUMN name VARCHAR(255) DEFAULT ''"))
+            print("  ✓ Done")
+        else:
+            print("  • 'name' column already exists in simulations table")
 
-    # Check existing columns in simulations
-    cursor.execute("PRAGMA table_info(simulations)")
-    simulation_columns = [row[1] for row in cursor.fetchall()]
-    
-    if "name" not in simulation_columns:
-        print("Adding 'name' column to simulations table...")
-        cursor.execute("ALTER TABLE simulations ADD COLUMN name TEXT DEFAULT ''")
-        print("  ✓ Done")
-    else:
-        print("  • 'name' column already exists in simulations table")
+        # -- simulations.created_by ---------------------------------------------
+        if not _column_exists(conn, "simulations", "created_by"):
+            print("Adding 'created_by' column to simulations table...")
+            conn.execute(
+                text(
+                    "ALTER TABLE simulations ADD COLUMN created_by INTEGER "
+                    "REFERENCES users(id)"
+                )
+            )
+            print("  ✓ Done")
+        else:
+            print("  • 'created_by' column already exists in simulations table")
 
-    if "created_by" not in simulation_columns:
-        print("Adding 'created_by' column to simulations table...")
-        cursor.execute("ALTER TABLE simulations ADD COLUMN created_by INTEGER REFERENCES users(id)")
-        print("  ✓ Done")
-    else:
-        print("  • 'created_by' column already exists in simulations table")
-
-    conn.commit()
-    conn.close()
     print("\n✅ Migration completed successfully!")
 
 
