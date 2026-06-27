@@ -48,6 +48,7 @@ export interface Assessment extends AssessmentCreate {
   user_id: number;
   created_at: string;
   prediction?: PredictionResponse;
+  persona?: PersonaResponse;
 }
 
 export interface PredictionRequest {

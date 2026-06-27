@@ -2,7 +2,8 @@
 Assessment routes.
 
 Improvements:
-- Eager-load predictions via joinedload to eliminate N+1 queries
+- Eager-load predictions AND personas via joinedload to eliminate N+1 queries
+- Cascade deletes clean up predictions, personas, and simulations
 - Structured logging for audit trail
 - Consistent error handling
 """
@@ -22,6 +23,8 @@ from app.services.assessment_service import create_assessment, get_assessment
 from app.models.user import User
 from app.models.assessment import Assessment
 from app.models.prediction import Prediction
+from app.models.persona import Persona
+from app.models.simulation import Simulation
 
 router = APIRouter(
     prefix="/assessment",
@@ -54,11 +57,14 @@ def get_user_assessments(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """List assessments with predictions eagerly loaded (eliminates N+1)."""
+    """List assessments with predictions and personas eagerly loaded (eliminates N+1)."""
     try:
         query = (
             db.query(Assessment)
-            .options(joinedload(Assessment.prediction))
+            .options(
+                joinedload(Assessment.prediction),
+                joinedload(Assessment.persona),
+            )
             .order_by(Assessment.created_at.desc())
         )
 
@@ -82,7 +88,10 @@ def get_assessment_by_id(
 ):
     assessment = (
         db.query(Assessment)
-        .options(joinedload(Assessment.prediction))
+        .options(
+            joinedload(Assessment.prediction),
+            joinedload(Assessment.persona),
+        )
         .filter(Assessment.id == assessment_id)
         .first()
     )
@@ -125,10 +134,14 @@ def update_assessment(
     db.commit()
     db.refresh(assessment)
 
-    # Attach prediction
-    assessment.prediction = (
-        db.query(Prediction)
-        .filter(Prediction.assessment_id == assessment.id)
+    # Eager-load relationships for response
+    assessment = (
+        db.query(Assessment)
+        .options(
+            joinedload(Assessment.prediction),
+            joinedload(Assessment.persona),
+        )
+        .filter(Assessment.id == assessment.id)
         .first()
     )
 
@@ -147,7 +160,7 @@ def delete_assessment(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Delete an assessment. Admin can delete any; regular users can only delete their own."""
+    """Delete an assessment and all related data (predictions, personas, simulations)."""
     assessment = get_assessment(db, assessment_id)
     if not assessment:
         raise HTTPException(status_code=404, detail="Assessment not found")
@@ -159,7 +172,13 @@ def delete_assessment(
             detail="Not authorized to delete this assessment",
         )
 
-    # Delete related predictions first
+    # Delete all related records (order matters for FK constraints)
+    db.query(Simulation).filter(
+        Simulation.assessment_id == assessment.id,
+    ).delete()
+    db.query(Persona).filter(
+        Persona.assessment_id == assessment.id,
+    ).delete()
     db.query(Prediction).filter(
         Prediction.assessment_id == assessment.id,
     ).delete()
@@ -168,7 +187,7 @@ def delete_assessment(
     db.commit()
 
     logger.info(
-        "Assessment %d deleted by user %d",
+        "Assessment %d deleted by user %d (with all related records)",
         assessment_id,
         current_user.id,
     )

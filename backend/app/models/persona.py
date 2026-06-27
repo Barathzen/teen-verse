@@ -19,7 +19,8 @@ class Persona(Base):
 
     assessment_id = Column(
         Integer,
-        ForeignKey("assessments.id")
+        ForeignKey("assessments.id"),
+        unique=True,
     )
 
     cluster_id = Column(Integer)
@@ -27,5 +28,5 @@ class Persona(Base):
     persona_name = Column(String)
 
     assessment = relationship(
-        "Assessment"
+        "Assessment", back_populates="persona"
     )

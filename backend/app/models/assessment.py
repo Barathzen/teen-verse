@@ -35,3 +35,6 @@ class Assessment(Base):
     prediction = relationship(
         "Prediction", uselist=False, back_populates="assessment", lazy="select"
     )
+    persona = relationship(
+        "Persona", uselist=False, back_populates="assessment", lazy="select"
+    )

@@ -10,8 +10,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { assessmentService, predictionService } from "@/services/index";
 import { Assessment } from "@/types/api";
 import { formatDate, getRiskCategory, formatRiskScore } from "@/utils/formatters";
-import { RISK_CATEGORIES } from "@/utils/constants";
-import { Pencil, Trash2, Check, X } from "lucide-react";
+import { RISK_CATEGORIES, PERSONA_TYPES } from "@/utils/constants";
+import { Pencil, Trash2, Check, X, Sparkles } from "lucide-react";
 
 export default function PredictionPage() {
   const { user } = useAuth();
@@ -23,6 +23,7 @@ export default function PredictionPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const [generatingId, setGeneratingId] = useState<number | null>(null);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   useEffect(() => {
@@ -87,14 +88,19 @@ export default function PredictionPage() {
 
   const handleGeneratePrediction = async (assessmentId: number) => {
     setError(null);
+    setGeneratingId(assessmentId);
     try {
-      const prediction = await predictionService.create(assessmentId);
+      await predictionService.create(assessmentId);
+      // Refetch to get the auto-generated persona too
+      const updatedAssessment = await assessmentService.get(assessmentId);
       setAssessments((prev) =>
-        prev.map((a) => (a.id === assessmentId ? { ...a, prediction } : a))
+        prev.map((a) => (a.id === assessmentId ? updatedAssessment : a))
       );
-      setToast({ message: "Prediction generated successfully", type: "success" });
+      setToast({ message: "Prediction & persona generated successfully!", type: "success" });
     } catch (err: any) {
       setToast({ message: err?.response?.data?.detail || "Failed to generate prediction", type: "error" });
+    } finally {
+      setGeneratingId(null);
     }
   };
 
@@ -109,11 +115,9 @@ export default function PredictionPage() {
             <h1 className="text-3xl font-bold text-gray-950 dark:text-white">Risk Predictions</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">View and manage your risk assessments</p>
           </div>
-          {isAdmin && (
-            <Link href="/dashboard/assessment">
-              <Button>New Assessment</Button>
-            </Link>
-          )}
+          <Link href="/dashboard/assessment">
+            <Button>New Assessment</Button>
+          </Link>
         </div>
         <Card>
           <PredictionPlaceholder />
@@ -142,23 +146,24 @@ export default function PredictionPage() {
           <h1 className="text-3xl font-bold text-gray-950 dark:text-white">Risk Predictions</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">View and manage your risk assessments</p>
         </div>
-        {isAdmin && (
-          <Link href="/dashboard/assessment">
-            <Button>New Assessment</Button>
-          </Link>
-        )}
+        <Link href="/dashboard/assessment">
+          <Button>New Assessment</Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
         {assessments.map((assessment) => {
           const prediction = assessment.prediction;
+          const persona = assessment.persona;
+          const personaInfo = persona ? PERSONA_TYPES[persona.persona_name] : null;
           const riskCategory = prediction ? getRiskCategory(prediction.risk_score) : null;
           const riskCategoryInfo = riskCategory ? RISK_CATEGORIES[riskCategory] : null;
           const isEditing = editingId === assessment.id;
           const isDeleting = deleteConfirmId === assessment.id;
+          const isGenerating = generatingId === assessment.id;
 
           return (
-            <Card key={assessment.id} className="hover:shadow-md transition duration-200 relative">
+            <Card key={assessment.id} className="hover:shadow-md transition duration-200 relative overflow-hidden">
               {/* Delete confirmation overlay */}
               {isDeleting && (
                 <div className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
@@ -188,7 +193,8 @@ export default function PredictionPage() {
 
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-3 flex-1">
-                  <div className="flex items-center gap-3">
+                  {/* Header row: name + persona badge */}
+                  <div className="flex items-center gap-3 flex-wrap">
                     {/* Editable name */}
                     {isEditing ? (
                       <div className="flex items-center gap-2">
@@ -234,35 +240,50 @@ export default function PredictionPage() {
                     )}
                   </div>
 
+                  {/* Persona badge */}
+                  {personaInfo && (
+                    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border ${personaInfo.bgColor} ${personaInfo.borderColor} transition-all duration-200`}>
+                      <span className="text-base">{personaInfo.emoji}</span>
+                      <div>
+                        <span className={`text-xs font-bold ${personaInfo.color}`}>
+                          {personaInfo.label}
+                        </span>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">
+                          {personaInfo.description}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-1">
                     <div>
                       <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Demographics</p>
-                      <p className="text-sm font-semibold text-gray-700 mt-0.5">
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
                         {assessment.age} y/o • {assessment.gender}
                       </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Social Platform</p>
-                      <p className="text-sm font-semibold text-gray-700 mt-0.5">
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
                         {assessment.platform_usage}
                       </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Social Media Hours</p>
-                      <p className="text-sm font-semibold text-gray-700 mt-0.5">
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
                         {assessment.social_media_hours}h/day
                       </p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Academic Performance</p>
-                      <p className="text-sm font-semibold text-gray-700 mt-0.5">
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5">
                         {assessment.academic_performance}%
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 md:border-l md:pl-6 min-w-[240px]">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 md:border-l md:border-gray-200 dark:md:border-gray-700 md:pl-6 min-w-[240px]">
                   {prediction ? (
                     <div className="flex-1 text-center sm:text-left">
                       <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Risk Level</p>
@@ -292,49 +313,54 @@ export default function PredictionPage() {
                           Run Simulation
                         </Button>
                       </Link>
-                    ) : isAdmin ? (
-                      <div className="flex flex-col gap-2">
-                        <button
-                          onClick={() => handleGeneratePrediction(assessment.id)}
-                          className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
-                        >
-                          Generate Prediction
-                        </button>
-                        <Link href={`/dashboard/assessment?id=${assessment.id}`}>
-                          <Button variant="outline" className="w-full whitespace-nowrap">
-                            View Assessment
-                          </Button>
-                        </Link>
-                      </div>
                     ) : (
-                      <div className="flex flex-col gap-2">
-                        <button
-                          onClick={() => handleGeneratePrediction(assessment.id)}
-                          className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
-                        >
-                          Generate Prediction
-                        </button>
-                        <Link href={`/dashboard/simulation?assessment=${assessment.id}`}>
-                          <Button variant="outline" className="w-full whitespace-nowrap">
-                            Run Simulation
-                          </Button>
-                        </Link>
-                      </div>
+                      <button
+                        onClick={() => handleGeneratePrediction(assessment.id)}
+                        disabled={isGenerating}
+                        className={`w-full px-4 py-2 rounded-lg text-white font-semibold transition-all flex items-center justify-center gap-2 ${
+                          isGenerating
+                            ? "bg-blue-400 cursor-wait"
+                            : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md hover:shadow-lg"
+                        }`}
+                      >
+                        {isGenerating ? (
+                          <>
+                            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles size={16} />
+                            Generate Prediction
+                          </>
+                        )}
+                      </button>
                     )}
-                    
+
+                    {prediction && (
+                      <Link href={`/dashboard/simulation?assessment=${assessment.id}`}>
+                        <Button variant="outline" className="w-full whitespace-nowrap text-xs">
+                          View Details
+                        </Button>
+                      </Link>
+                    )}
+
                     {/* Admin controls */}
                     {isAdmin && !isEditing && (
                       <div className="flex gap-2 justify-center">
                         <button
                           onClick={() => handleStartRename(assessment)}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-lg transition"
                           title="Rename assessment"
                         >
                           <Pencil size={14} />
                         </button>
                         <button
                           onClick={() => setDeleteConfirmId(assessment.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition"
                           title="Delete assessment"
                         >
                           <Trash2 size={14} />

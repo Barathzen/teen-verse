@@ -48,6 +48,10 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+# Register global exception handlers
+from app.core.exception_handlers import register_exception_handlers
+register_exception_handlers(app)
+
 # ---------------------------------------------------------------------------
 # CORS configuration
 # ---------------------------------------------------------------------------

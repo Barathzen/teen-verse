@@ -28,14 +28,14 @@ PERSONAS = {
 
 def classify(dataframe):
 
-    cluster = (
+    cluster = int(
         pipeline.predict(
             dataframe
         )[0]
     )
 
     return {
-        "cluster_id": int(cluster),
+        "cluster_id": cluster,
         "persona_name":
             PERSONAS.get(
                 cluster,
