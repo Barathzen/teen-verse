@@ -371,6 +371,20 @@ export const SimulationEngine: React.FC = () => {
                   </p>
                 </div>
               )}
+
+              {result.ripple_story && (
+                <div className="mt-6 p-5 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-indigo-600 dark:text-indigo-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </span>
+                    <h3 className="text-md font-bold text-indigo-900 dark:text-indigo-300">The Ripple Effect</h3>
+                  </div>
+                  <p className="text-sm text-indigo-800 dark:text-indigo-200 leading-relaxed italic">
+                    &quot;{result.ripple_story}&quot;
+                  </p>
+                </div>
+              )}
             </Card>
           )}
 
@@ -553,6 +567,15 @@ export const SimulationEngine: React.FC = () => {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Ripple Story */}
+                  {sim.ripple_story && (
+                    <div className="mt-4 px-4 py-3 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-lg border-l-4 border-indigo-300 dark:border-indigo-700">
+                      <p className="text-sm text-indigo-700 dark:text-indigo-300 italic">
+                        {sim.ripple_story}
+                      </p>
+                    </div>
+                  )}
                 </Card>
               );
             })}

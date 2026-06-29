@@ -95,6 +95,7 @@ export interface SimulationResponse {
   modified_sleep_hours: number;
   modified_social_media_hours: number;
   modified_physical_activity: number;
+  ripple_story?: string;
   created_at?: string;
 }
 

@@ -60,6 +60,9 @@ class SimulationResponse(BaseModel):
     modified_sleep_hours: float
     modified_social_media_hours: float
     modified_physical_activity: float
+    ripple_story: Optional[str] = Field(
+        default="", description="The AI-generated narrative of how these changes impact the user's day."
+    )
     created_at: Optional[datetime] = None
 
     class Config:

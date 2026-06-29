@@ -43,6 +43,8 @@ class Simulation(Base):
 
     modified_physical_activity = Column(Float)
 
+    ripple_story = Column(String, default="")
+
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()

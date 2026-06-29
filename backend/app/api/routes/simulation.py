@@ -9,11 +9,13 @@ Improvements:
 """
 
 import logging
+import httpx
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user
+from app.core.config import settings
 from app.schemas.simulation_schema import (
     SimulationRequest,
     SimulationUpdate,
@@ -46,6 +48,7 @@ def _to_response(sim: Simulation) -> SimulationResponse:
         modified_sleep_hours=sim.modified_sleep_hours,
         modified_social_media_hours=sim.modified_social_media_hours,
         modified_physical_activity=sim.modified_physical_activity,
+        ripple_story=sim.ripple_story,
         created_at=sim.created_at,
     )
 
@@ -120,6 +123,47 @@ def simulate(
 
         future_risk = max(0.0, min(100.0, current_risk - risk_adjustment))
 
+        # -------------------------------------------------------------------
+        # The Ripple Effect: Generate a narrative story via LLM
+        # -------------------------------------------------------------------
+        ripple_story = "A small change in your habits could lead to a better day tomorrow."
+        if settings.OPENROUTER_API_KEY:
+            try:
+                prompt = (
+                    f"Write a short, engaging 3-sentence story in the second person ('You...') about a teenager's day tomorrow. "
+                    f"Their sleep changed from {assessment.sleep_hours}h to {request.sleep_hours}h. "
+                    f"Their social media use changed from {assessment.social_media_hours}h to {request.social_media_hours}h. "
+                    f"Their physical activity changed from {assessment.physical_activity}/10 to {request.physical_activity}/10. "
+                    f"Their overall mental health risk score dropped from {current_risk:.1f} to {future_risk:.1f}. "
+                    f"Make it realistic, empathetic, and focus on the 'ripple effect' these specific habit changes have on their mood, focus, or energy."
+                )
+                headers = {
+                    "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+                    "HTTP-Referer": settings.OPENROUTER_HTTP_REFERER,
+                    "X-Title": settings.OPENROUTER_APP_TITLE,
+                }
+                payload = {
+                    "model": settings.OPENROUTER_MODEL,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0.7,
+                    "max_tokens": 500,
+                }
+                with httpx.Client(timeout=20.0) as client:
+                    resp = client.post(settings.OPENROUTER_API_BASE_URL, json=payload, headers=headers)
+                    resp.raise_for_status()
+                    data = resp.json()
+                    message = data["choices"][0]["message"]
+                    content = message.get("content")
+                    
+                    if content:
+                        ripple_story = content.strip()
+                    else:
+                        # Fallback if the model only provided reasoning tokens or failed
+                        ripple_story = "A small change in your habits could lead to a better day tomorrow."
+                        
+            except Exception as e:
+                logger.warning(f"Failed to generate ripple story: {e}")
+
         # Save simulation to database
         simulation = Simulation(
             assessment_id=assessment.id,
@@ -130,6 +174,7 @@ def simulate(
             modified_sleep_hours=float(request.sleep_hours),
             modified_social_media_hours=float(request.social_media_hours),
             modified_physical_activity=float(request.physical_activity),
+            ripple_story=ripple_story,
         )
 
         db.add(simulation)
