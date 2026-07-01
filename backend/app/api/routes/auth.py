@@ -2,8 +2,9 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_db, get_current_user, get_async_db
 from app.models.user import User
 from app.schemas.auth_schema import (
     RegisterRequest,
@@ -29,19 +30,19 @@ logger = logging.getLogger(__name__)
 
 
 @router.post("/register", response_model=TokenResponse)
-def register(
+async def register(
     request: RegisterRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_async_db)
 ):
     try:
-        user = register_user(
+        user = await register_user(
             db,
             request.name,
             request.email,
             request.password,
             request.role
         )
-        token = login_user(
+        token = await login_user(
             db,
             request.email,
             request.password
@@ -61,12 +62,12 @@ def register(
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(
+async def login(
     request: LoginRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_async_db)
 ):
     try:
-        token = login_user(
+        token = await login_user(
             db,
             request.email,
             request.password
@@ -85,12 +86,12 @@ def login(
 
 
 @router.post("/google", response_model=TokenResponse)
-def google_login(
+async def google_login(
     request: GoogleLoginRequest,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_async_db)
 ):
     try:
-        token = google_login_user(
+        token = await google_login_user(
             db,
             request.email,
             request.name,
@@ -119,7 +120,7 @@ def get_users(
 ):
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
-    return list_users(db)
+    return list_users(db) 
 
 
 @router.patch("/users/{user_id}/role", response_model=UserResponse)

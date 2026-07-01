@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from app.core.config import settings
 
@@ -29,12 +30,37 @@ engine = create_engine(
     **_pool_kwargs,
 )
 
-
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=engine
 )
 
+# Async engine and sessionmaker
+_async_url = _url
+if _async_url.startswith("postgresql://"):
+    _async_url = _async_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+_async_pool_kwargs = {}
+if _async_url.startswith("postgresql+asyncpg"):
+    _async_pool_kwargs = {
+        "pool_size": 10,
+        "max_overflow": 20,
+        "pool_pre_ping": True,
+        "pool_recycle": 1800,
+    }
+
+async_engine = create_async_engine(
+    _async_url,
+    echo=False,
+    **_async_pool_kwargs,
+)
+
+AsyncSessionLocal = async_sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=async_engine,
+    class_=AsyncSession,
+)
 
 Base = declarative_base()

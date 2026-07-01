@@ -10,7 +10,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError
 from sqlalchemy.orm import Session
 
-from app.core.database import SessionLocal
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.database import SessionLocal, AsyncSessionLocal
 from app.core.security import verify_token
 from app.models.user import User
 
@@ -25,6 +26,12 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
+
+async def get_async_db() -> AsyncSession:
+    """Yield an async database session that is automatically closed after use."""
+    async with AsyncSessionLocal() as db:
+        yield db
 
 
 def get_current_user(

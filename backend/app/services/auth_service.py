@@ -1,3 +1,6 @@
+import asyncio
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from app.models.user import User
@@ -8,19 +11,19 @@ from app.core.security import (
     create_access_token
 )
 
-def register_user(
-    db: Session,
+async def register_user(
+    db: AsyncSession,
     name: str,
     email: str,
     password: str,
     role: str = "user"
 ):
 
-    existing_user = (
-        db.query(User)
+    result = await db.execute(
+        select(User)
         .filter(User.email == email)
-        .first()
     )
+    existing_user = result.scalars().first()
 
     if existing_user:
         raise ValueError(
@@ -31,42 +34,42 @@ def register_user(
     # Admin access is granted later from the admin portal.
     user_role = "user"
 
+    hashed_pw = await asyncio.to_thread(hash_password, password)
+
     user = User(
         name=name,
         email=email,
-        password=hash_password(password),
+        password=hashed_pw,
         role=user_role
     )
 
     db.add(user)
 
-    db.commit()
+    await db.commit()
 
-    db.refresh(user)
+    await db.refresh(user)
 
     return user
 
-def login_user(
-    db: Session,
+async def login_user(
+    db: AsyncSession,
     email: str,
     password: str
 ):
 
-    user = (
-        db.query(User)
+    result = await db.execute(
+        select(User)
         .filter(User.email == email)
-        .first()
     )
+    user = result.scalars().first()
 
     if not user:
         raise ValueError(
             "Invalid credentials"
         )
 
-    if not verify_password(
-        password,
-        user.password
-    ):
+    is_valid = await asyncio.to_thread(verify_password, password, user.password)
+    if not is_valid:
         raise ValueError(
             "Invalid credentials"
         )
@@ -78,19 +81,23 @@ def login_user(
     return token
 
 
-def google_login_user(db: Session, email: str, name: str, uid: str):
-    user = db.query(User).filter(User.email == email).first()
+async def google_login_user(db: AsyncSession, email: str, name: str, uid: str):
+    result = await db.execute(
+        select(User).filter(User.email == email)
+    )
+    user = result.scalars().first()
     if not user:
         # Create user if it doesn't exist
+        hashed_pw = await asyncio.to_thread(hash_password, uid)
         user = User(
             name=name,
             email=email,
-            password=hash_password(uid), # Use UID as dummy password since authentication is managed by Google
+            password=hashed_pw, # Use UID as dummy password since authentication is managed by Google
             role="user"
         )
         db.add(user)
-        db.commit()
-        db.refresh(user)
+        await db.commit()
+        await db.refresh(user)
 
     token = create_access_token({"sub": str(user.id)})
     return token
